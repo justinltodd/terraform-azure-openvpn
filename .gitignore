@@ -1,0 +1,2 @@
+# Don't track content of these folders
+.terraform/plugins/linux_amd64/
