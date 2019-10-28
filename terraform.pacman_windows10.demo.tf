@@ -208,6 +208,9 @@ resource "azurerm_virtual_machine" "terraform_pacman_test_vm" {
     provision_vm_agent        = true
   }
 
+  winrm = {  //Here defined WinRM connectivity config
+      protocol = "http"
+
   boot_diagnostics {
     enabled     = "true"
     storage_uri = "${azurerm_storage_account.terraform_pacman_test_storage.primary_blob_endpoint}"
