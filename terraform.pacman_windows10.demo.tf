@@ -123,30 +123,29 @@ resource "azurerm_virtual_machine" "terraform_pacman_test_vm" {
   vm_size               = "Standard_B2ms"
 
   storage_os_disk {
-    name              = "myOsDisk"
+    name              = "disk1"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
+    os_type           = "Windows"
   }
 
   storage_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
-    version   = "latest"
+    publisher = "MicrosoftWindowsDesktop"
+    offer     = "Windows-10"
+    sku       = "19h1-pro"
+    version   = "18362.418.1910070306"
   }
 
   os_profile {
-    computer_name  = "pacman-demo01"
+    computer_name  = "pacman-Win10demo01"
     admin_username = "pacman"
+    admin_password = "pasword1234"
   }
 
-  os_profile_linux_config {
-    disable_password_authentication = true
-    ssh_keys {
-      path     = "/home/pacman/.ssh/authorized_keys"
-      key_data = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC74HfO/rCZ2HxvE2vEtUsDpLg7tjPWKPr/kk2qf03KBSyUg7sAdajawv0JRz+sfl8NiOJ69q/kpUGBuVUTDB58zyF9X4OCR7OQCn5B7wOG96nxMZbbPjQhkGZlz9XfQBfF8eCsA5fZDe62ZswLyOWgtPuMKK722n8BT9llwojZwZsEFga00d/JJM0w9ePsoDzF2j2/AWLsCief+WwnJsRz+1CqY3R4La8/k6NHCTAeXyQpfJg6Sc4dy8Bstc6ck27ExqW0pNv+MI5FuaDTYPvdKpYbQHk/T1qvX6/nU5QAwLKmHWr3nO9TRymaUlLApQP0410vFnpI5zt84eR/5o8t justintodd@pokerspro.localdomain"
-    }
+  os_profile_windows_config {
+    enable_automatic_upgrades = true
+    provision_vm_agent        = true
   }
 
   boot_diagnostics {
@@ -156,5 +155,11 @@ resource "azurerm_virtual_machine" "terraform_pacman_test_vm" {
 
   tags = {
     environment = "Terraform Pacman Demo"
+    CreatedBy   = "JTODD",
+    Purpose     = "Windows Automation Client"
   }
+
+
+  #--- Post Install Provisioning ---
+
 }
