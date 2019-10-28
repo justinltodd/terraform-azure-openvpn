@@ -7,8 +7,8 @@ provider "azurerm" {
 }
 
 # Create a resource group if it doesn’t exist
-resource "azurerm_resource_group" "terraform_pacman_rgroup_jtodd" {
-  name     = "terraform_pacman_test"
+resource "azurerm_resource_group" "terraform_pacman_rgroup" {
+  name     = "terraform_pacman_demo"
   location = "centralus"
 
   tags = {
@@ -18,11 +18,11 @@ resource "azurerm_resource_group" "terraform_pacman_rgroup_jtodd" {
 }
 
 # Create virtual network
-resource "azurerm_virtual_network" "terraform_pacman_network_jtodd" {
-  name                = "terraform_pacman_test_Vnet"
+resource "azurerm_virtual_network" "terraform_pacman_network" {
+  name                = "terraform_pacman_Vnet"
   address_space       = ["10.0.0.0/16"]
   location            = "centralus"
-  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
 
   tags = {
     environment = "Terraform Pacman Demo"
@@ -30,18 +30,18 @@ resource "azurerm_virtual_network" "terraform_pacman_network_jtodd" {
 }
 
 # Create subnet
-resource "azurerm_subnet" "terraform_pacman_subnet_jtodd" {
-  name                 = "terraform_pacman_test_subnet"
-  resource_group_name  = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
-  virtual_network_name = "${azurerm_virtual_network.terraform_pacman_network_jtodd.name}"
+resource "azurerm_subnet" "terraform_pacman_subnet" {
+  name                 = "subnet0"
+  resource_group_name  = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
+  virtual_network_name = "${azurerm_virtual_network.terraform_pacman_network.name}"
   address_prefix       = "10.0.1.0/24"
 }
 
 # Create public IPs
-resource "azurerm_public_ip" "terraform_pacman_publicip_jtodd" {
-  name                = "terraform_pacman_test_publicIP"
+resource "azurerm_public_ip" "terraform_pacman_PublicIP" {
+  name                = "WinPublicIP"
   location            = "centralus"
-  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
   allocation_method   = "Dynamic"
 
   tags = {
@@ -50,10 +50,10 @@ resource "azurerm_public_ip" "terraform_pacman_publicip_jtodd" {
 }
 
 # Create Network Security Group and rule
-resource "azurerm_network_security_group" "terraform_pacman_jtodd-sg" {
-  name                = "terraform_pacman-SecurityGroup-jtodd"
+resource "azurerm_network_security_group" "terraform_pacman-SG" {
+  name                = "terraform_pacman-SecurityGroup"
   location            = "centralus"
-  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
 
   security_rule {
     name                       = "SSH"
@@ -73,17 +73,17 @@ resource "azurerm_network_security_group" "terraform_pacman_jtodd-sg" {
 }
 
 # Create network interface
-resource "azurerm_network_interface" "terraform_pacman_jtodd-nic" {
-  name                      = "terraform_pacman_NIC"
+resource "azurerm_network_interface" "terraform_pacman-WindowsNic" {
+  name                      = "primaryNic${count.index}"
   location                  = "centralus"
-  resource_group_name       = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
-  network_security_group_id = "${azurerm_network_security_group.terraform_pacman_jtodd-sg.id}"
+  resource_group_name       = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
+  network_security_group_id = "${azurerm_network_security_group.terraform_pacman-SG.id}"
 
   ip_configuration {
-    name                          = "terraform_pacman_NicConfiguration"
-    subnet_id                     = "${azurerm_subnet.terraform_pacman_subnet_jtodd.id}"
+    name                          = "ipconfig${count.index}"
+    subnet_id                     = "${azurerm_subnet.terraform_pacman_subnet.id}"
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = "${azurerm_public_ip.terraform_pacman_publicip_jtodd.id}"
+    public_ip_address_id          = "${azurerm_public_ip.terraform_pacman_PublicIP.id}"
   }
 
   tags = {
@@ -95,7 +95,7 @@ resource "azurerm_network_interface" "terraform_pacman_jtodd-nic" {
 resource "random_id" "randomId" {
   keepers = {
     # Generate a new ID only when a new resource group is defined
-    resource_group = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+    resource_group = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
   }
 
   byte_length = 8
@@ -104,7 +104,7 @@ resource "random_id" "randomId" {
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "terraform_pacman_test_storage" {
   name                     = "diag${random_id.randomId.hex}"
-  resource_group_name      = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+  resource_group_name      = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
   location                 = "centralus"
   account_tier             = "Standard"
   account_replication_type = "LRS"
@@ -116,10 +116,10 @@ resource "azurerm_storage_account" "terraform_pacman_test_storage" {
 
 # Create virtual machine
 resource "azurerm_virtual_machine" "terraform_pacman_test_vm" {
-  name                  = "pacman_demo01"
+  name                  = "Windows10pro_Demo1"
   location              = "centralus"
-  resource_group_name   = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
-  network_interface_ids = ["${azurerm_network_interface.terraform_pacman_jtodd-nic.id}"]
+  resource_group_name   = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
+  network_interface_ids = ["${azurerm_network_interface.terraform_pacman-WindowsNic.id}"]
   vm_size               = "Standard_B2ms"
 
   storage_os_disk {
