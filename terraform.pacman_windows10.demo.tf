@@ -103,29 +103,29 @@ resource "azurerm_network_security_group" "terraform_pacman-NSG" {
     destination_address_prefix = "*"
   }
 
-  security_rule { //BluePrism API Port
-    name                       = "BluePrismAPI"
-    priority                   = 8181
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
+  #  security_rule { //BluePrism API Port
+  #    name                       = "BluePrismAPI"
+  #    priority                   = 8181
+  #    direction                  = "Inbound"
+  #    access                     = "Allow"
+  #    protocol                   = "Tcp"
+  #    source_port_range          = "*"
+  #    destination_port_range     = "443"
+  #    source_address_prefix      = "*"
+  #    destination_address_prefix = "*"
+  #  }
 
-  security_rule { //BluePrism API Port
-    name                       = "BluePrismAPI"
-    priority                   = 8181
-    direction                  = "Outbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
+  #  security_rule { //BluePrism API Port
+  #    name                       = "BluePrismAPI"
+  #    priority                   = 8181
+  #    direction                  = "Outbound"
+  #    access                     = "Allow"
+  #    protocol                   = "Tcp"
+  #    source_port_range          = "*"
+  #    destination_port_range     = "443"
+  #    source_address_prefix      = "*"
+  #    destination_address_prefix = "*"
+  #  }
 
   tags = {
     environment = "Terraform Pacman Demo"
@@ -134,13 +134,13 @@ resource "azurerm_network_security_group" "terraform_pacman-NSG" {
 
 # Create network interface
 resource "azurerm_network_interface" "terraform_pacman-WindowsNic" {
-  name                      = "primaryNic${count.index}"
+  name                      = "primaryNici01"
   location                  = "centralus"
   resource_group_name       = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
-  network_security_group_id = "${azurerm_network_security_group.terraform_pacman-SG.id}"
+  network_security_group_id = "${azurerm_network_security_group.terraform_pacman-NSG.id}"
 
   ip_configuration {
-    name                          = "ipconfig${count.index}"
+    name                          = "ipconfig01"
     subnet_id                     = "${azurerm_subnet.terraform_pacman_subnet.id}"
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = "${azurerm_public_ip.terraform_pacman_PublicIP.id}"
@@ -175,8 +175,8 @@ resource "azurerm_storage_account" "terraform_pacman_test_storage" {
 }
 
 # Create virtual machine
-resource "azurerm_virtual_machine" "terraform_pacman_test_vm" {
-  name                  = "Windows10pro_Demo1"
+resource "azurerm_virtual_machine" "pacman" {
+  name                  = "pacman"
   location              = "centralus"
   resource_group_name   = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
   network_interface_ids = ["${azurerm_network_interface.terraform_pacman-WindowsNic.id}"]
@@ -198,18 +198,14 @@ resource "azurerm_virtual_machine" "terraform_pacman_test_vm" {
   }
 
   os_profile {
-    computer_name  = "pacman-Win10demo01"
+    computer_name  = "pacman01"
     admin_username = "pacman"
-    admin_password = "pasword1234"
+    admin_password = "Pasword1234"
   }
 
   os_profile_windows_config {
     enable_automatic_upgrades = true
     provision_vm_agent        = true
-  }
-
-  winrm = { //Here defined WinRM connectivity config
-    protocol = "http"
   }
 
   boot_diagnostics {
