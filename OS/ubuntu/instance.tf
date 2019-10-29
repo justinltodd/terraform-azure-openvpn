@@ -1,13 +1,13 @@
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
-  subscription_id = "36483a93-0c29-4b4f-89fd-2b1077a44280"
-  client_id       = "29e008e2-2708-4484-9e78-9a652389124b"
-  client_secret   = "Mi2@/mM=4Js3l4xRv:KrCEjHlvGU]N@3"
-  tenant_id       = "8ce308d8-142f-4ba1-8e44-7ac446b0b300"
+  subscription_id = "${var.subscription_id}"
+  client_id       = "${var.client_id}"
+  client_secret   = "${var.client_secret}"
+  tenant_id       = "${var.tenant_id}"
 }
 
 # Create a resource group if it doesn’t exist
-resource "azurerm_resource_group" "terraform_pacman_rgroup_jtodd" {
+resource "azurerm_resource_group" "terraform_pacman_rgroup" {
   name     = "terraform_pacman_test"
   location = "centralus"
 
@@ -18,11 +18,11 @@ resource "azurerm_resource_group" "terraform_pacman_rgroup_jtodd" {
 }
 
 # Create virtual network
-resource "azurerm_virtual_network" "terraform_pacman_network_jtodd" {
+resource "azurerm_virtual_network" "terraform_pacman_network" {
   name                = "terraform_pacman_test_Vnet"
   address_space       = ["10.0.0.0/16"]
   location            = "centralus"
-  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
 
   tags = {
     environment = "Terraform Pacman Demo"
@@ -30,18 +30,18 @@ resource "azurerm_virtual_network" "terraform_pacman_network_jtodd" {
 }
 
 # Create subnet
-resource "azurerm_subnet" "terraform_pacman_subnet_jtodd" {
+resource "azurerm_subnet" "terraform_pacman_subnet" {
   name                 = "terraform_pacman_test_subnet"
-  resource_group_name  = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
-  virtual_network_name = "${azurerm_virtual_network.terraform_pacman_network_jtodd.name}"
+  resource_group_name  = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
+  virtual_network_name = "${azurerm_virtual_network.terraform_pacman_network.name}"
   address_prefix       = "10.0.1.0/24"
 }
 
 # Create public IPs
-resource "azurerm_public_ip" "terraform_pacman_publicip_jtodd" {
-  name                = "terraform_pacman_test_publicIP"
+resource "azurerm_public_ip" "terraform_pacman_PublicIP" {
+  name                = "PublicIP"
   location            = "centralus"
-  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
   allocation_method   = "Dynamic"
 
   tags = {
@@ -50,10 +50,10 @@ resource "azurerm_public_ip" "terraform_pacman_publicip_jtodd" {
 }
 
 # Create Network Security Group and rule
-resource "azurerm_network_security_group" "terraform_pacman_jtodd-sg" {
-  name                = "terraform_pacman-SecurityGroup-jtodd"
+resource "azurerm_network_security_group" "terraform_pacman-NSG" {
+  name                = "Pacman-SecurityGroup"
   location            = "centralus"
-  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+  resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
 
   security_rule {
     name                       = "SSH"
@@ -73,17 +73,17 @@ resource "azurerm_network_security_group" "terraform_pacman_jtodd-sg" {
 }
 
 # Create network interface
-resource "azurerm_network_interface" "terraform_pacman_jtodd-nic" {
-  name                      = "terraform_pacman_NIC"
+resource "azurerm_network_interface" "terraform_pacman-UbuntuNic" {
+  name                      = "primaryNic01"
   location                  = "centralus"
-  resource_group_name       = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
-  network_security_group_id = "${azurerm_network_security_group.terraform_pacman_jtodd-sg.id}"
+  resource_group_name       = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
+  network_security_group_id = "${azurerm_network_security_group.terraform_pacman-NSG.id}"
 
   ip_configuration {
-    name                          = "terraform_pacman_NicConfiguration"
-    subnet_id                     = "${azurerm_subnet.terraform_pacman_subnet_jtodd.id}"
+    name                          = "ethernet01"
+    subnet_id                     = "${azurerm_subnet.terraform_pacman_subnet.id}"
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = "${azurerm_public_ip.terraform_pacman_publicip_jtodd.id}"
+    public_ip_address_id          = "${azurerm_public_ip.terraform_pacman_PublicIP.id}"
   }
 
   tags = {
@@ -95,7 +95,7 @@ resource "azurerm_network_interface" "terraform_pacman_jtodd-nic" {
 resource "random_id" "randomId" {
   keepers = {
     # Generate a new ID only when a new resource group is defined
-    resource_group = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+    resource_group = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
   }
 
   byte_length = 8
@@ -104,7 +104,7 @@ resource "random_id" "randomId" {
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "terraform_pacman_test_storage" {
   name                     = "diag${random_id.randomId.hex}"
-  resource_group_name      = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
+  resource_group_name      = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
   location                 = "centralus"
   account_tier             = "Standard"
   account_replication_type = "LRS"
@@ -115,15 +115,15 @@ resource "azurerm_storage_account" "terraform_pacman_test_storage" {
 }
 
 # Create virtual machine
-resource "azurerm_virtual_machine" "terraform_pacman_test_vm" {
-  name                  = "pacman_demo01"
+resource "azurerm_virtual_machine" "pacman" {
+  name                  = "pacman"
   location              = "centralus"
-  resource_group_name   = "${azurerm_resource_group.terraform_pacman_rgroup_jtodd.name}"
-  network_interface_ids = ["${azurerm_network_interface.terraform_pacman_jtodd-nic.id}"]
+  resource_group_name   = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
+  network_interface_ids = ["${azurerm_network_interface.terraform_pacman-UbuntuNic.id}"]
   vm_size               = "Standard_B2ms"
 
   storage_os_disk {
-    name              = "myOsDisk"
+    name              = "disk1"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
@@ -137,8 +137,9 @@ resource "azurerm_virtual_machine" "terraform_pacman_test_vm" {
   }
 
   os_profile {
-    computer_name  = "pacman-demo01"
+    computer_name  = "pacman01"
     admin_username = "pacman"
+    admin_password = "Pasword1234"
   }
 
   os_profile_linux_config {

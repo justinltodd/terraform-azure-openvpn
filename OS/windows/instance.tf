@@ -1,9 +1,9 @@
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
-  subscription_id = "36483a93-0c29-4b4f-89fd-2b1077a44280"
-  client_id       = "29e008e2-2708-4484-9e78-9a652389124b"
-  client_secret   = "Mi2@/mM=4Js3l4xRv:KrCEjHlvGU]N@3"
-  tenant_id       = "8ce308d8-142f-4ba1-8e44-7ac446b0b300"
+  subscription_id = "${var.subscription_id}"
+  client_id       = "${var.client_id}"
+  client_secret   = "${var.client_secret}"
+  tenant_id       = "${var.tenant_id}"
 }
 
 # Create a resource group if it doesn’t exist
@@ -39,7 +39,7 @@ resource "azurerm_subnet" "terraform_pacman_subnet" {
 
 # Create public IPs
 resource "azurerm_public_ip" "terraform_pacman_PublicIP" {
-  name                = "WinPublicIP"
+  name                = "PublicIP"
   location            = "centralus"
   resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
   allocation_method   = "Dynamic"
@@ -51,7 +51,7 @@ resource "azurerm_public_ip" "terraform_pacman_PublicIP" {
 
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "terraform_pacman-NSG" {
-  name                = "Windows_Pacman-SecurityGroup"
+  name                = "Pacman-SecurityGroup"
   location            = "centralus"
   resource_group_name = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
 
@@ -134,7 +134,7 @@ resource "azurerm_network_security_group" "terraform_pacman-NSG" {
 
 # Create network interface
 resource "azurerm_network_interface" "terraform_pacman-WindowsNic" {
-  name                      = "primaryNici01"
+  name                      = "primaryNic01"
   location                  = "centralus"
   resource_group_name       = "${azurerm_resource_group.terraform_pacman_rgroup.name}"
   network_security_group_id = "${azurerm_network_security_group.terraform_pacman-NSG.id}"
