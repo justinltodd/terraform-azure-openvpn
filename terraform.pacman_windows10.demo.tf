@@ -208,8 +208,9 @@ resource "azurerm_virtual_machine" "terraform_pacman_test_vm" {
     provision_vm_agent        = true
   }
 
-  winrm = {  //Here defined WinRM connectivity config
-      protocol = "http"
+  winrm = { //Here defined WinRM connectivity config
+    protocol = "http"
+  }
 
   boot_diagnostics {
     enabled     = "true"
