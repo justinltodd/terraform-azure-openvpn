@@ -24,8 +24,8 @@ resource "azurerm_subnet" "backend" {
   address_prefix       = "10.0.2.0/24"
 }
 
-resource "azurerm_network_security_group" "sg" {
-  name                = "sg-openvpn"
+resource "azurerm_network_security_group" "vpn-sg" {
+  name                = "${var.vpn-sg}"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.main.name}"
 }
@@ -34,7 +34,7 @@ resource "azurerm_network_security_group" "sg" {
 resource "azurerm_network_security_rule" "ssh" {
   name                        = "PermitSSHInbound"
   resource_group_name         = "${azurerm_resource_group.main.name}"
-  network_security_group_name = "${azurerm_network_security_group.sg.name}"
+  network_security_group_name = "${azurerm_network_security_group.vpn-sg.name}"
   priority                    = 100
   direction                   = "Inbound"
   access                      = "Allow"
@@ -49,7 +49,7 @@ resource "azurerm_network_security_rule" "ssh" {
 resource "azurerm_network_security_rule" "openvpn" {
   name                        = "PermitOpenVPNInbound"
   resource_group_name         = "${azurerm_resource_group.main.name}"
-  network_security_group_name = "${azurerm_network_security_group.sg.name}"
+  network_security_group_name = "${azurerm_network_security_group.vpn-sg.name}"
   priority                    = 110
   direction                   = "Inbound"
   access                      = "Allow"
@@ -68,10 +68,10 @@ resource "azurerm_public_ip" "PublicIP" {
 }
 
 resource "azurerm_network_interface" "nic" {
-  name                      = "${var.vpn_nic}"
+  name                      = "${var.vpnserver_hostname}"
   location                  = "${var.location}"
   resource_group_name       = "${azurerm_resource_group.main.name}"
-  network_security_group_id = "${azurerm_network_security_group.sg.name}"
+  network_security_group_id = "${azurerm_network_security_group.vpn-sg.name}"
 
   ip_configuration {
     name                          = "${var.vpnserver_hostname}"
