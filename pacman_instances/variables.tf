@@ -41,7 +41,7 @@ variable "location" {
 
 variable "vpnserver_hostname" {
   description = "The hostname of the openvpn server VM to be configured"
-  default     = "pacmanvpn"
+  default     = "pacmanvpn01"
 }
 
 variable "pacman_hostname" {
@@ -62,3 +62,30 @@ variable "prefix" {
   description = "The prefix that will be attached to all resources deployed"
   default     = "pacman"
 }
+
+variable "vpn_nic" {
+  description = "Network interface vpn server"
+  default     = "ifconfig01"
+}
+
+variable "virtual_network" {
+  description = "The azurerm_virtual_network name"
+  default     = "PacmanVNet1"
+}
+
+variable "vpn_frontend_subnet" {
+  description = "The frontend vpn client network"
+  default     = "frontSubNet"
+}
+
+variable "vpn_backendend_subnet" {
+  description = "The backend network"
+  default     = "backendSubNet"
+}
+
+variable "sg" {
+  description = "Security group for Pacman OpenVPN"
+  default     = "sg-openvpn"
+}
+
+
