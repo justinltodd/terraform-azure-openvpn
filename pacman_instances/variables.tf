@@ -11,26 +11,27 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
-# 
+# ---------------------------------------------------------------------------------------------------------------------
+
 
 variable "subscription_id" {
   description = "Subscription ID"
-  default =
+  default = "36483a93-0c29-4b4f-89fd-2b1077a44280"
 }
 
 variable "tenant_id" {
   description = "Tenant ID"
-  default =
+  default = "8ce308d8-142f-4ba1-8e44-7ac446b0b300"
 }
 
 variable "client_id" {
   description = "Client ID"
-  default =
+  default = "29e008e2-2708-4484-9e78-9a652389124b"
 }
 
 variable "client_secret" {
   description = "Client secret password"
-  default =
+  default = "Mi2@/mM=4Js3l4xRv:KrCEjHlvGU]N@3"
 }
 
 variable "location" {
@@ -38,9 +39,14 @@ variable "location" {
   default = "Central US"
 }
 
-variable "hostname" {
-  description = "The hostname of the new VM to be configured"
-  default     = "terratest-vm"
+variable "vpnserver_hostname" {
+  description = "The hostname of the openvpn server VM to be configured"
+  default     = "pacmanvpn"
+}
+
+variable "pacman_hostname" {
+  description = "The hostname of the new VM pacman desktop to be configured"
+  default     = "pacman01"
 }
 
 variable "username" {

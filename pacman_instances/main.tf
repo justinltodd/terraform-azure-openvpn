@@ -5,6 +5,11 @@ provider "azurerm" {
   tenant_id       = "${var.tenant_id}"
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = "vpn"
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY A RESOURCE GROUP
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "azurerm_resource_group" "main" {
+  name     = "${var.prefix}-resources"
   location = "${var.location}"
+}
