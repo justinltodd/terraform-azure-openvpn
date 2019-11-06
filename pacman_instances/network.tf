@@ -45,7 +45,7 @@ resource "azurerm_network_security_rule" "ssh" {
   destination_address_prefix  = "*"
 }
 
-# NOTE: this allows VPN from Intenet
+# NOTE: this allows VPN from Internet
 resource "azurerm_network_security_rule" "openvpn" {
   name                        = "PermitOpenVPNInbound"
   resource_group_name         = "${azurerm_resource_group.main.name}"
