@@ -9,7 +9,7 @@ resource "random_id" "randomId" {
 }
 
 # Create storage account for boot diagnostics
-resource "azurerm_storage_account" "terraform_dx01_vpn_storage" {
+resource "azurerm_storage_account" "dx_vpn_storage" {
   name                     = "diag${random_id.randomId.hex}"
   resource_group_name      = "${azurerm_resource_group.dx01.name}"
   location                 = "${var.location}"
