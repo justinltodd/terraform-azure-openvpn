@@ -115,6 +115,16 @@ variable "mgmt_backend_subnet" {
   default     = "mgmt_backendSubnet"
 }
 
+variable "DNS1" {
+  description = "Quad9 First Primary DNS"
+  default     = "9.9.9.9"
+}
+
+variable "DNS2" {
+  description = "Quad9 Secondary DNS"
+  default     = "149.112.112.112"
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 # SECURITY GROUPS VARIABLES -------------------------------------------------------------------------------------------
