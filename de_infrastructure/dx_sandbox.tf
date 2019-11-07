@@ -9,7 +9,7 @@ resource "random_id" "randomId" {
 }
 
 # Create storage account for boot diagnostics
-resource "azurerm_storage_account" "terraform_dx01_windows10_storage" {
+resource "azurerm_storage_account" "dx_windows10_storage" {
   name                     = "diag${random_id.randomId.hex}"
   resource_group_name      = "${azurerm_resource_group.dx01.name}"
   location                 = "${var.location}"
@@ -21,29 +21,16 @@ resource "azurerm_storage_account" "terraform_dx01_windows10_storage" {
   }
 }
 
-# Create storage account for boot diagnostics
-resource "azurerm_storage_account" "terraform_dx01_test_storage" {
-  name                     = "diag${random_id.randomId.hex}"
-  resource_group_name      = "${azurerm_resource_group.terraform_dx01_rgroup.name}"
-  location                 = "centralus"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-
-  tags = {
-    environment = "Windows 10 Desktop: ${var.windows_hostname}"
-  }
-}
-
 # Create virtual machine
-resource "azurerm_virtual_machine" "dx01" {
-  name                  = "dx01"
-  location              = "centralus"
-  resource_group_name   = "${azurerm_resource_group.terraform_dx01_rgroup.name}"
-  network_interface_ids = ["${azurerm_network_interface.terraform_dx01-WindowsNic.id}"]
-  vm_size               = "Standard_B2ms"
+resource "azurerm_virtual_machine" "dx_windows" {
+  name                  = "${var.windows_hostname}"
+  location              = "${var.location}"
+  resource_group_name   = "${azurerm_resource_group.dx01.name}"
+  network_interface_ids = ["${azurerm_network_interface.dx-WindowsNic.id}"]
+  vm_size               = "${dx_windows10_vmsize}"
 
   storage_os_disk {
-    name              = "disk1"
+    name              = "${var.windows_hostname}_os"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
@@ -58,9 +45,9 @@ resource "azurerm_virtual_machine" "dx01" {
   }
 
   os_profile {
-    computer_name  = "dx01"
-    admin_username = "admin"
-    admin_password = "Pasword1234"
+    computer_name  = "${var.windows_hostname}"
+    admin_username = "${var.windows_username}"
+    admin_password = "${var.windows_password}"
   }
 
   os_profile_windows_config {
@@ -70,11 +57,11 @@ resource "azurerm_virtual_machine" "dx01" {
 
   boot_diagnostics {
     enabled     = "true"
-    storage_uri = "${azurerm_storage_account.terraform_dx01_test_storage.primary_blob_endpoint}"
+    storage_uri = "${azurerm_storage_account.dx_windows10_storage.primary_blob_endpoint}"
   }
 
   tags = {
-    environment = "Terraform dx01 Demo"
+    environment = "${var.windows_hostname} dx Demo"
     CreatedBy   = "JTODD",
     Purpose     = "Windows Automation Client"
   }
