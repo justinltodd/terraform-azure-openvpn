@@ -37,6 +37,14 @@ resource "azurerm_network_security_group" "vpn-sg" {
   resource_group_name = "${azurerm_resource_group.dx01.name}"
 }
 
+resource "azurerm_network_security_group" "windows10-sg" {
+  name                = "${var.dx_windows10-sg}"
+  location            = "${var.location}"
+  resource_group_name = "${azurerm_resource_group.dx01.name}"
+}
+
+
+
 # NOTE: this allows SSH from any network
 resource "azurerm_network_security_rule" "ssh" {
   name                        = "PermitSSHInbound"
