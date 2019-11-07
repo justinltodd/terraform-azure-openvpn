@@ -48,6 +48,66 @@ resource "azurerm_network_security_group" "windows10-sg" {
   resource_group_name = "${azurerm_resource_group.dx01.name}"
 }
 
+# NOTE: //Here opened remote desktop port windows10-sg
+resource "azurerm_network_security_rule" "RDP" {
+  name                        = "RDP"
+  resource_group_name         = "${azurerm_resource_group.dx01.name}"
+  network_security_group_name = "${azurerm_network_security_group.windows10-sg.name}"
+  priority                    = 110
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "3389"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+}
+
+# NOTE: //Opened WinRM Port Windows windows10-sg
+resource "azurerm_network_security_rule" "WinRM" {
+  name                        = "WinRM"
+  resource_group_name         = "${azurerm_resource_group.dx01.name}"
+  network_security_group_name = "${azurerm_network_security_group.windows10-sg.name}"
+  priority                    = 1010
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "5985"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+}
+
+# NOTE: //Opened Outbound WinRM Port Windows windows10-sg
+resource "azurerm_network_security_rule" "WinRM-out" {
+  name                        = "WinRM-out"
+  resource_group_name         = "${azurerm_resource_group.dx01.name}"
+  network_security_group_name = "${azurerm_network_security_group.windows10-sg.name}"
+  priority                    = 100
+  direction                   = "Outbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "5985"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+}
+
+# NOTE: //Opened HTTPS port windows10-sg
+resource "azurerm_network_security_rule" "HTTPS" {
+  name                        = "HTTPS"
+  resource_group_name         = "${azurerm_resource_group.dx01.name}"
+  network_security_group_name = "${azurerm_network_security_group.windows10-sg.name}"
+  priority                    = 1000
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+}
+
 # NOTE: this allows SSH from any network vpn-sg
 resource "azurerm_network_security_rule" "ssh" {
   name                        = "PermitSSHInbound"
@@ -93,6 +153,7 @@ resource "azurerm_network_security_rule" "HTTPS" {
   destination_address_prefix  = "*"
 }
 
+# VPNSERVER PublicIP
 resource "azurerm_public_ip" "PublicIP" {
   name                         = "${var.vpnserver_hostname}-public"
   resource_group_name          = "${azurerm_resource_group.dx01.name}"
@@ -101,9 +162,10 @@ resource "azurerm_public_ip" "PublicIP" {
   domain_name_label            = "${var.vpnserver_hostname}"  #//adds dns using hostname.centralus.cloudapp.azure.com
 
   tags = {
-    environment = "VPN Server"
+    environment = "VPN Server: ${var.vpnserver_hostname}"
 }
 
+# VPNSERVER Network Interface
 resource "azurerm_network_interface" "vpnserver_nic" {
   name                      = "${var.vpnserver_hostname}"
   location                  = "${var.location}"
