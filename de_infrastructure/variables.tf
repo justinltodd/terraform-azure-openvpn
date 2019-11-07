@@ -63,7 +63,7 @@ variable "windows_hostname" {
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-# VM VPN SERVER SETTINGS - SIZE,NIC,KEYS,ETC -------------------------------------------------------------------------------
+# VM VPN SERVER SETTINGS - SIZE,NIC,KEYS,ETC --------------------------------------------------------------------------
 variable "vpnserver_vmsize" {
   description = "Size of the VMs"
   default     = "Standard_B2ms"
@@ -92,6 +92,17 @@ variable "client_config_path" {
 
 variable "client_config_name" {
   default = "bluedx-vpn01-ovpn-client"
+}
+
+# VM DX Windows Desktop 10  SETTINGS - SIZE,NIC,KEYS,ETC --------------------------------------------------------------------------
+variable "dx_windows10_vmsize" {
+  description = "Size of the VMs"
+  default     = "Standard_B2ms"
+}
+
+variable "dx_windows10_nic" {
+  description = "Network interface vpn server"
+  default     = "ipconfig01"
 }
 
 # NETWORK VARIABLES ---------------------------------------------------------------------------------------------------
@@ -126,6 +137,8 @@ variable "DNS2" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
+
+
 
 # SECURITY GROUPS VARIABLES -------------------------------------------------------------------------------------------
 variable "vpn-sg" {
