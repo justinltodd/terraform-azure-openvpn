@@ -87,7 +87,7 @@ resource "azurerm_public_ip" "PublicIP" {
   resource_group_name          = "${azurerm_resource_group.dx01.name}"
   location                     = "${var.location}"
   public_ip_address_allocation = "static"
-  domain_name_label            = "bluedx-${var.vpnserver_hostname}"  #//adds dns using hostname.centralus.cloudapp.azure.com
+  domain_name_label            = "${var.vpnserver_hostname}"  #//adds dns using hostname.centralus.cloudapp.azure.com
 
   tags = {
     environment = "VPN Server"
