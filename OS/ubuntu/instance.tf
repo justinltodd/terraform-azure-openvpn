@@ -138,7 +138,7 @@ resource "azurerm_virtual_machine" "dx01" {
 
   os_profile {
     computer_name  = "dx0101"
-    admin_username = "dx01"
+    admin_username = "admin"
     admin_password = "Pasword1234"
   }
 
