@@ -41,7 +41,7 @@ variable "location" {
 # USERNAMES LINUX VPN SERVER ------------------------------------------------------------------------------------------
 variable "vpn_username" {
   description = "The username to be provisioned into your VM"
-  default     = "pacman"
+  default     = "adminn"
 
 variable "vpn_password" {
   description = "The password to configure for SSH access"
@@ -53,12 +53,12 @@ variable "vpn_password" {
 # HOSTNAMES -----------------------------------------------------------------------------------------------------------
 variable "vpnserver_hostname" {
   description = "The hostname of the openvpn server LINUX VM to be configured"
-  default     = "pacmanvpn01"
+  default     = "vpn01"
 }
 
-variable "pacman_hostname" {
-  description = "The hostname of the new VM pacman Windows desktop to be configured"
-  default     = "pacman01"
+variable "windows_hostname" {
+  description = "The hostname of the new VM  Windows 10 desktop to be configured"
+  default     = "demo01"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -77,17 +77,17 @@ variable "vpn_nic" {
 # NETWORK VARIABLES ---------------------------------------------------------------------------------------------------
 variable "virtual_network" {
   description = "The azurerm_virtual_network name"
-  default     = "PacmanVNet1"
+  default     = "dxVNet1"
 }
 
 variable "vpn_frontend_subnet" {
   description = "The frontend vpn client network"
-  default     = "frontSubNet"
+  default     = "frontendSubNet"
 }
 
-variable "vpn_backendend_subnet" {
+variable "mgmt_backend_subnet" {
   description = "The backend network"
-  default     = "backendSubNet"
+  default     = "mgmt_backendSubnet"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ variable "vpn_backendend_subnet" {
 # SECURITY GROUPS VARIABLES -------------------------------------------------------------------------------------------
 variable "vpn-sg" {
   description = "Security group for Pacman OpenVPN"
-  default     = "vpn-sg"
+  default     = "vpn-SecurityGroup"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -108,5 +108,5 @@ variable "vpn-sg" {
 # PREFIX FOR RESOURCE NAMING SCHEME -----------------------------------------------------------------------------------
 variable "prefix" {
   description = "The prefix that will be attached to all resources deployed"
-  default     = "pacman"
+  default     = "dx"
 }
