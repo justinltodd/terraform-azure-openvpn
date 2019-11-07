@@ -63,7 +63,7 @@ variable "windows_hostname" {
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-# VM VPN SERVER SETTINGS - SIZE,NIC,ETC -------------------------------------------------------------------------------
+# VM VPN SERVER SETTINGS - SIZE,NIC,KEYS,ETC -------------------------------------------------------------------------------
 variable "vpnserver_vmsize" {
   description = "Size of the VMs"
   default     = "Standard_B2ms"
@@ -72,6 +72,10 @@ variable "vpnserver_vmsize" {
 variable "vpnserver_nic" {
   description = "Network interface vpn server"
   default     = "ifconfig01"
+}
+
+variable "ssh_public_key_file" {
+  default = "./ssh_public_keys/ovpn.pub"
 }
 
 # NETWORK VARIABLES ---------------------------------------------------------------------------------------------------
