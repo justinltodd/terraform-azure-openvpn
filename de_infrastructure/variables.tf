@@ -150,12 +150,12 @@ variable "DNS2" {
 # SECURITY GROUPS VARIABLES -------------------------------------------------------------------------------------------
 variable "vpn-sg" {
   description = "Security group for OpenVPN Server"
-  default     = "vpn-SecurityGroup"
+  default     = "vpn_SecurityGroup"
 }
 
-variable "dx_windows-sg" {
+variable "dx_windows10-sg" {
   description = "Security group for Windows 10 Desktop"
-  default     = "dxWindows-SecurityGroup"
+  default     = "dx_Windows10-SecurityGroup"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
