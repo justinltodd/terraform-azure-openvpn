@@ -53,12 +53,12 @@ variable "vpnserver_password" {
 # HOSTNAMES -----------------------------------------------------------------------------------------------------------
 variable "vpnserver_hostname" {
   description = "The hostname of the openvpn server LINUX VM to be configured"
-  default     = "vpn01"
+  default     = "bluedx-vpn01"
 }
 
 variable "windows_hostname" {
   description = "The hostname of the new VM  Windows 10 desktop to be configured"
-  default     = "demo01"
+  default     = "bluedx-demo01"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
