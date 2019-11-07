@@ -8,11 +8,11 @@ provider "azurerm" {
 
 # Create a resource group if it doesn’t exist
 resource "azurerm_resource_group" "terraform_dx01_rgroup" {
-  name     = "terraform_dx01_demo"
-  location = "centralus"
+  name     = "${var.rg_name}"
+  location = "${var.location}"
 
   tags = {
-    environment = "Terraform dx01 Demo"
+    environment = "${var.environment}"
   }
 
 }
@@ -21,11 +21,11 @@ resource "azurerm_resource_group" "terraform_dx01_rgroup" {
 resource "azurerm_virtual_network" "terraform_dx01_network" {
   name                = "terraform_dx01_Vnet"
   address_space       = ["10.0.0.0/16"]
-  location            = "centralus"
+  location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.terraform_dx01_rgroup.name}"
 
   tags = {
-    environment = "Terraform dx01 Demo"
+    environment = "${var.environment}"
   }
 }
 
@@ -40,19 +40,19 @@ resource "azurerm_subnet" "terraform_dx01_subnet" {
 # Create public IPs
 resource "azurerm_public_ip" "terraform_dx01_PublicIP" {
   name                = "PublicIP"
-  location            = "centralus"
+  location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.terraform_dx01_rgroup.name}"
   allocation_method   = "Dynamic"
 
   tags = {
-    environment = "Terraform dx01 Demo"
+    environment = "${var.environment}"
   }
 }
 
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "terraform_dx01-NSG" {
   name                = "dx01-SecurityGroup"
-  location            = "centralus"
+  location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.terraform_dx01_rgroup.name}"
 
   security_rule { //Here opened remote desktop port
@@ -128,14 +128,14 @@ resource "azurerm_network_security_group" "terraform_dx01-NSG" {
   #  }
 
   tags = {
-    environment = "Terraform dx01 Demo"
+    environment = "${var.environment}"
   }
 }
 
 # Create network interface
 resource "azurerm_network_interface" "terraform_dx01-WindowsNic" {
   name                      = "primaryNic01"
-  location                  = "centralus"
+  location                  = "${var.location}"
   resource_group_name       = "${azurerm_resource_group.terraform_dx01_rgroup.name}"
   network_security_group_id = "${azurerm_network_security_group.terraform_dx01-NSG.id}"
 
@@ -147,7 +147,7 @@ resource "azurerm_network_interface" "terraform_dx01-WindowsNic" {
   }
 
   tags = {
-    environment = "Terraform dx01 Demo"
+    environment = "${var.environment}"
   }
 }
 
@@ -165,19 +165,19 @@ resource "random_id" "randomId" {
 resource "azurerm_storage_account" "terraform_dx01_test_storage" {
   name                     = "diag${random_id.randomId.hex}"
   resource_group_name      = "${azurerm_resource_group.terraform_dx01_rgroup.name}"
-  location                 = "centralus"
+  location                 = "${var.location}"
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
   tags = {
-    environment = "Terraform dx01 Demo"
+    environment = "${var.environment}"
   }
 }
 
 # Create virtual machine
 resource "azurerm_virtual_machine" "dx01" {
   name                  = "dx01"
-  location              = "centralus"
+  location              = "${var.location}"
   resource_group_name   = "${azurerm_resource_group.terraform_dx01_rgroup.name}"
   network_interface_ids = ["${azurerm_network_interface.terraform_dx01-WindowsNic.id}"]
   vm_size               = "Standard_B2ms"
@@ -214,7 +214,7 @@ resource "azurerm_virtual_machine" "dx01" {
   }
 
   tags = {
-    environment = "Terraform dx01 Demo"
+    environment = "${var.environment}"
     CreatedBy   = "JTODD",
     Purpose     = "Windows Automation Client"
   }

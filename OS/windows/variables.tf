@@ -13,3 +13,15 @@ variable "client_id" {
 variable "client_secret" {
   default = ""
 }
+
+variable "rg_name" {
+  default = ""
+}
+
+variable "environment" {
+  default = "Sandbox"
+}
+
+variable "location" {
+  default = "centralus"
+}
