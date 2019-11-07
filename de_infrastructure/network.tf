@@ -1,8 +1,8 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # DEPLOY A VIRTUAL NETWORK RESOURCES
-# See test/terraform_azure_example_test.go for how to write automated tests for this code.
 # ---------------------------------------------------------------------------------------------------------------------
 
+# Virtual Network 
 resource "azurerm_virtual_network" "vnet" {
   name                = "${var.virtual_network}"
   address_space       = ["10.0.0.0/16"]
@@ -10,6 +10,7 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = "${azurerm_resource_group.dx01.name}"
 }
 
+# Gateway subnet
 resource "azurerm_subnet" "GatewaySubnet" {
   name                 = "${var.gateway_subnet}"
   resource_group_name  = "${azurerm_resource_group.dx01.name}"
@@ -17,35 +18,37 @@ resource "azurerm_subnet" "GatewaySubnet" {
   address_prefix       = "10.0.1.0/24"
 }
 
-resource "azurerm_subnet" "frontend" {
-  name                 = "${var.vpn_frontend_subnet}"
+# Management backend subnet for administrative purposes
+resource "azurerm_subnet" "management" {
+  name                 = "${var.mgmt_backend_subnet}"
   resource_group_name  = "${azurerm_resource_group.dx01.name}"
   virtual_network_name = "${azurerm_virtual_network.vnet.name}"
   address_prefix       = "10.0.2.0/24"
 }
 
-resource "azurerm_subnet" "management" {
-  name                 = "${var.mgmt_backend_subnet}"
+# First initial subnet for dx windows 10 instances
+resource "azurerm_subnet" "frontend" {
+  name                 = "${var.vpn_frontend_subnet}"
   resource_group_name  = "${azurerm_resource_group.dx01.name}"
   virtual_network_name = "${azurerm_virtual_network.vnet.name}"
   address_prefix       = "10.0.3.0/24"
 }
 
+# DX VPN Server  Network Security Group
 resource "azurerm_network_security_group" "vpn-sg" {
   name                = "${var.vpn-sg}"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
 }
 
+# DX Windows 10 Desktop Network Security Group
 resource "azurerm_network_security_group" "windows10-sg" {
   name                = "${var.dx_windows10-sg}"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
 }
 
-
-
-# NOTE: this allows SSH from any network
+# NOTE: this allows SSH from any network vpn-sg
 resource "azurerm_network_security_rule" "ssh" {
   name                        = "PermitSSHInbound"
   resource_group_name         = "${azurerm_resource_group.dx01.name}"
@@ -60,7 +63,7 @@ resource "azurerm_network_security_rule" "ssh" {
   destination_address_prefix  = "*"
 }
 
-# NOTE: this allows VPN from Internet
+# NOTE: this allows VPN from Internet vpn-sg
 resource "azurerm_network_security_rule" "openvpn" {
   name                        = "PermitOpenVPNInbound"
   resource_group_name         = "${azurerm_resource_group.dx01.name}"
@@ -75,7 +78,7 @@ resource "azurerm_network_security_rule" "openvpn" {
   destination_address_prefix  = "*"
 }
 
-# NOTE: this allows HTTPS access to client ovpn file from Internet
+# NOTE: this allows HTTPS access to client ovpn file from Internet vpn-sg
 resource "azurerm_network_security_rule" "HTTPS" {
   name                        = "HTTPS"
   resource_group_name         = "${azurerm_resource_group.dx01.name}"
