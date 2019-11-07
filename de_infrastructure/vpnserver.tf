@@ -54,7 +54,7 @@ resource "azurerm_virtual_machine" "openvpn" {
 
     ssh_keys {
       path     = "/home/${var.vpnserver_username}/.ssh/authorized_keys"
-      key_data = "${file(var.public_key_file)}"
+      key_data = "${file(var.ssh_public_key_file)}"
     }
   }
 
@@ -66,8 +66,37 @@ resource "azurerm_virtual_machine" "openvpn" {
   }
 
   provisioner "file" {
-    content     = "${data.template_file.deployment_shell_script.rendered}"
-    destination = "/tmp/userdata.sh"
+    content     = "${var.build_vpnserver}"
+    destination = "/tmp/${var.build_vpnserver}"
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/${var.build_vpnserver}",
+      "sudo /tmp/${var.build_vpnserver}",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Waiting for client config ...'",
+      "while [ ! -f /etc/openvpn/client.ovpn ]; do sleep 5; done",
+      "echo 'DONE!'",
+    ]
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "${var.vpnserver_username}"
+      private_key = "${file(var.ssh_private_key_file)}"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "local-exec" {
+    command = "scp -o StrictHostKeyChecking=no -i ${var.ssh_private_key_file} ${var.vpnserver_username}@${azurerm_public_ip.PublicIP.ip_address}:/etc/openvpn/client.ovpn ${var.client_config_path}/${var.client_config_name}.ovpn"
+  }
+
+
 
 }
