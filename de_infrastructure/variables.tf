@@ -40,20 +40,20 @@ variable "location" {
 
 # USERNAMES VPN/Windows  ----------------------------------------------------------------------------------------------
 variable "vpnserver_username" {
-  description = "The username to be provisioned into your VM"
+  description = "The username configured for linux"
   default     = "admin"
 
 variable "vpnserver_password" {
-  description = "The password to configure for SSH access"
+  description = "The password configured for linux"
   default     = "Password1234"
 }
 
 variable "windows_username" {
-  description = "The username to be provisioned into your VM"
+  description = "The username for windows account"
   default     = "dxadmin"
 
-variable "windowsr_password" {
-  description = "The password to configure for SSH access"
+variable "windows_password" {
+  description = "The password for windows account"
   default     = "Password1234"
 }
 
