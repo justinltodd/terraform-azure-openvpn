@@ -97,6 +97,34 @@ resource "azurerm_virtual_machine" "openvpn" {
     command = "scp -o StrictHostKeyChecking=no -i ${var.ssh_private_key_file} ${var.vpnserver_username}@${azurerm_public_ip.PublicIP.ip_address}:/etc/openvpn/client.ovpn ${var.client_config_path}/${var.client_config_name}.ovpn"
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "echo 'Scheduling instance reboot in one minute ...'",
+      "sudo shutdown -r +1",
+    ]
 
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "${var.vpnserver_username}"
+      private_key = "${file(var.ssh_private_key_file)}"
+      timeout     = "5m"
+    }
+  }
 
+  provisioner "local-exec" {
+    command = "rm -f ${var.client_config_path}/${var.client_config_name}.ovpn"
+    when    = "destroy"
+  }
 }
+
+data "template_file" "deployment_shell_script" {
+  template = "${file(var.build_vpnserver)}"
+
+  vars {
+    cert_details       = "${file(var.cert_details)}"
+    client_config_name = "${var.client_config_name}"
+  }
+}
+
+
