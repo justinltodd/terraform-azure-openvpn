@@ -38,12 +38,21 @@ variable "location" {
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-# USERNAMES LINUX VPN SERVER ------------------------------------------------------------------------------------------
+# USERNAMES VPN/Windows  ----------------------------------------------------------------------------------------------
 variable "vpnserver_username" {
   description = "The username to be provisioned into your VM"
   default     = "admin"
 
 variable "vpnserver_password" {
+  description = "The password to configure for SSH access"
+  default     = "Password1234"
+}
+
+variable "windows_username" {
+  description = "The username to be provisioned into your VM"
+  default     = "dxadmin"
+
+variable "windowsr_password" {
   description = "The password to configure for SSH access"
   default     = "Password1234"
 }
@@ -138,12 +147,15 @@ variable "DNS2" {
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-
-
 # SECURITY GROUPS VARIABLES -------------------------------------------------------------------------------------------
 variable "vpn-sg" {
-  description = "Security group for Pacman OpenVPN"
+  description = "Security group for OpenVPN Server"
   default     = "vpn-SecurityGroup"
+}
+
+variable "dx_windows-sg" {
+  description = "Security group for Windows 10 Desktop"
+  default     = "dxWindows-SecurityGroup"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
