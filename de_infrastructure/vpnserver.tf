@@ -73,7 +73,7 @@ resource "azurerm_virtual_machine" "openvpn" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/${var.build_vpnserver}",
-      "sudo /tmp/${var.build_vpnserver} --adminpassword=dxPassword1234 --host=${var.vpnserver_hostname}.centralus.cloudapp.azure.com",
+      "sudo /tmp/${var.build_vpnserver} --adminpassword=dxPassword1234 --host=${var.vpnserver_hostname}.adsadadscom",
     ]
   }
 
@@ -118,6 +118,7 @@ resource "azurerm_virtual_machine" "openvpn" {
   }
 }
 
+# Template for shell script ./scripts/openvpn.sh
 data "template_file" "deployment_shell_script" {
   template = "${file(var.build_vpnserver)}"
 
