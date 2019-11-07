@@ -9,7 +9,7 @@ provider "azurerm" {
 # DEPLOY A RESOURCE GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_resource_group" "main" {
-  name     = "${var.prefix}-resources"
+resource "azurerm_resource_group" "dx01" {
+  name     = "${var.prefix}-vpn"
   location = "${var.location}"
 }
