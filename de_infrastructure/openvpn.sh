@@ -7,6 +7,7 @@ DNS2="8.8.4.4"
 PROTOCOL=udp
 PORT=1194
 HOST=$(wget -4qO- "http://whatismyip.akamai.com/")
+EASYRSA=$(curl -s https://api.github.com/repos/OpenVPN/easy-rsa/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")' | cut -d '"' -f 4)
 
 
 for i in "$@"
@@ -93,14 +94,12 @@ fi
 if [[ -d /etc/openvpn/easy-rsa/ ]]; then
 	rm -rf /etc/openvpn/easy-rsa/
 fi
-# Get easy-rsa
 
-wget -O ~/EasyRSA-3.0.1.tgz "https://github.com/OpenVPN/easy-rsa/releases/download/3.0.1/EasyRSA-3.0.1.tgz"
-tar xzf ~/EasyRSA-3.0.1.tgz -C ~/
-mv ~/EasyRSA-3.0.1/ /etc/openvpn/
-mv /etc/openvpn/EasyRSA-3.0.1/ /etc/openvpn/easy-rsa/
+# Get easy-rsa
+curl -s https://api.github.com/repos/OpenVPN/easy-rsa/releases/latest | grep "browser_download_url.*tgz" | cut -d : -f 2,3 | tr -d '"' | awk '!/sig/' | wget -O /tmp/EasyRSA-unix-$EASYRSA.tgz -qi -
+tar -zxvf EasyRSA-unix-$EASYRSA.tgz --one-top-level=/etc/openvpn/easy-rsa
 chown -R root:root /etc/openvpn/easy-rsa/
-rm -rf ~/EasyRSA-3.0.1.tgz
+rm -rf /tmp/EasyRSA-unix-$EASYRSA.tgz
 cd /etc/openvpn/easy-rsa/
 
 # Create the PKI, set up the CA, the DH params and the server + client certificates
