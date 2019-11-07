@@ -74,8 +74,16 @@ variable "vpnserver_nic" {
   default     = "ifconfig01"
 }
 
+variable "build_vpnserver" {
+  default = "./scripts/openvpn.sh"
+}
+
 variable "ssh_public_key_file" {
   default = "./ssh_public_keys/ovpn.pub"
+}
+
+variable "ssh_private_key_file" {
+  default = "./ssh_public_keys/ovpn"
 }
 
 # NETWORK VARIABLES ---------------------------------------------------------------------------------------------------
