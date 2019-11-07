@@ -77,7 +77,7 @@ variable "vpn_nic" {
 # NETWORK VARIABLES ---------------------------------------------------------------------------------------------------
 variable "virtual_network" {
   description = "The azurerm_virtual_network name"
-  default     = "dxVNet1"
+  default     = "dxVPNVNet"
 }
 
 variable "gateway_subnet" {
