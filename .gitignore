@@ -4,3 +4,19 @@ terraform-provider-*
 terraform.tfstate.d/
 terraform.tfstate
 terraform.tfstate.backup
+
+
+# Compiled files
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Module directory
+.terraform/
+
+# Other
+#certs/ovpn*
+#client_configs/*.ovpn
+#cert_details
+.idea/*
+.DS_Store
