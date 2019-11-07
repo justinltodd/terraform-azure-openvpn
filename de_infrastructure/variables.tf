@@ -39,11 +39,11 @@ variable "location" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 # USERNAMES LINUX VPN SERVER ------------------------------------------------------------------------------------------
-variable "vpn_username" {
+variable "vpnserver_username" {
   description = "The username to be provisioned into your VM"
-  default     = "adminn"
+  default     = "admin"
 
-variable "vpn_password" {
+variable "vpnserver_password" {
   description = "The password to configure for SSH access"
   default     = "Password1234"
 }
@@ -64,12 +64,12 @@ variable "windows_hostname" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 # VM VPN SERVER SETTINGS - SIZE,NIC,ETC -------------------------------------------------------------------------------
-variable "vmsize" {
+variable "vpnserver_vmsize" {
   description = "Size of the VMs"
-  default     = "Standard_DS1_v2"
+  default     = "Standard_B2ms"
 }
 
-variable "vpn_nic" {
+variable "vpnserver_nic" {
   description = "Network interface vpn server"
   default     = "ifconfig01"
 }
