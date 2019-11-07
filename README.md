@@ -1,28 +1,12 @@
+## Terraform DX SANDBOX 
 # de_infrastructure_dev
 
-# de_infrastructure 
-Create Multi Subnet Hub and Spoke network with OpenVPN server network Gateway
-/dynamic_environment_dev/de_infrastructure
+1. Builds ubuntu 18.04 server and installs openvpn along with latest version of EasyRSA
+2. Ubuntu packages that are install Lighttpd, easyrsa, openvpn
+3. Security Rule for SSH access and Openvpn
+4. Build a windows 10 pro desktop.
+5. Security rule for HTTPS, WINRM, RDP
+
 
 ##-------------------##
 
-# Create Windows 10 or Ubuntu 18.04 LTS Instance
-Terraform scripts to create Windows 10 and Ubuntu 18.04 LTS /dynamic_environment_dev/OS/
-
-## Steps for use
-
-1. cd '/dynamic_environment_dev/OS/' select which OS
-2. Update variables.tf credentials
-3. terraform init
-4. terraform apply
-
-##-------------------##
-
-# Azure OpenVPN TEST
-Terraform scripts to create a quick OpenVPN server in azure. /dynamic_environment_dev/OpenVPNAzure
-
-## Steps for use
-
-1. cd '/dynamic_environment_dev/OpenVPNAzure/'
-
-##-------------------##
