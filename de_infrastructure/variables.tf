@@ -80,6 +80,11 @@ variable "virtual_network" {
   default     = "dxVNet1"
 }
 
+variable "gateway_subnet" {
+  description = "The Gateway subnet"
+  default     = "GatewaySubnet"
+}
+
 variable "vpn_frontend_subnet" {
   description = "The frontend vpn client network"
   default     = "frontendSubNet"
