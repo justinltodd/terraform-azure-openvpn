@@ -67,6 +67,21 @@ resource "azurerm_network_security_rule" "openvpn" {
   destination_address_prefix  = "*"
 }
 
+# NOTE: this allows HTTPS access to client ovpn file from Internet
+resource "azurerm_network_security_rule" "HTTPS" {
+  name                        = "HTTPS"
+  resource_group_name         = "${azurerm_resource_group.dx01.name}"
+  network_security_group_name = "${azurerm_network_security_group.vpn-sg.name}"
+  priority                    = 1000
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Udp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+}
+
 resource "azurerm_public_ip" "PublicIP" {
   name                         = "${var.vpnserver_hostname}-public"
   resource_group_name          = "${azurerm_resource_group.dx01.name}"
