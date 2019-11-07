@@ -74,7 +74,7 @@ resource "azurerm_public_ip" "PublicIP" {
   public_ip_address_allocation = "static"
 }
 
-resource "azurerm_network_interface" "vpn_nic" {
+resource "azurerm_network_interface" "vpnserver_nic" {
   name                      = "${var.vpnserver_hostname}"
   location                  = "${var.location}"
   resource_group_name       = "${azurerm_resource_group.dx01.name}"
