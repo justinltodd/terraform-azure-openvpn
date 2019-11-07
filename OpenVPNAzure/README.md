@@ -6,8 +6,6 @@ Terraform scripts to create a quick OpenVPN server in azure.
 1. For Azure, be sure you have the Azure CLI installed and complete an `az login`
 2. Create your SSH keys:
 
-    `cd TerraformOpenVPN`
-
     `ssh-keygen -N '' -f ./certs/ovpn`
 
 3. Edit your own `cert_details` (use `cert_details.sample` as template)
