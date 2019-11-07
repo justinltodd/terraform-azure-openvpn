@@ -167,7 +167,7 @@ resource "azurerm_public_ip" "PublicIP" {
 
 # VPNSERVER Network Interface
 resource "azurerm_network_interface" "vpnserver_nic" {
-  name                      = "${var.vpnserver_hostname}"
+  name                      = "${var.vpnserver_hostname}Nic01"
   location                  = "${var.location}"
   resource_group_name       = "${azurerm_resource_group.dx01.name}"
   network_security_group_id = "${azurerm_network_security_group.vpn-sg.name}"
@@ -180,4 +180,33 @@ resource "azurerm_network_interface" "vpnserver_nic" {
   }
 }
 
+# Create windows 10 desktop IPs
+resource "azurerm_public_ip" "dx_PublicIP" {
+  name                = "${var.windows_hostname}-public"
+  resource_group_name = "${azurerm_resource_group.dx01.name}"
+  location            = "${var.location}"
+  allocation_method   = "Dynamic"
 
+  tags = {
+    environment = "Windows 10 Desktop: ${var.windows_hostname}"
+  }
+}
+
+# Create windows 10 desktop network interface
+resource "azurerm_network_interface" "dx-WindowsNic" {
+  name                      = "${var.windows_hostname}Nic01"
+  location                  = "${var.location}"
+  resource_group_name       = "${azurerm_resource_group.dx01.name}"
+  network_security_group_id = "${azurerm_network_security_group.windows10-sg.id}"
+
+  ip_configuration {
+    name                          = "${var.windows_hostname}"
+    subnet_id                     = "${azurerm_subnet.frontend.id}"
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = "${azurerm_public_ip.dx_PublicIP.id}"
+  }
+
+  tags = {
+    environment = "Windows 10 Desktop: ${var.windows_hostname}"
+  }
+}
