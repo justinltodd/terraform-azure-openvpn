@@ -68,6 +68,4 @@ resource "azurerm_virtual_machine" "dx_windows" {
 
 
   #--- Post Install Provisioning ---
-
 }
-
