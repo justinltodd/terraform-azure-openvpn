@@ -10,6 +10,17 @@ provider "azurerm" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_resource_group" "dx01" {
-  name     = "${var.prefix}-vpn"
+  name     = "${var.prefix}01-resource"
   location = "${var.location}"
 }
+
+resource "azurerm_resource_group" "dx02" {
+  name     = "${var.prefix}02-resource"
+  location = "${var.location}"
+}
+
+resource "azurerm_resource_group" "dx03" {
+  name     = "${var.prefix}03-resource"
+  location = "${var.location}"
+}
+
