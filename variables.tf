@@ -103,6 +103,22 @@ variable "client_config_name" {
   default = "bluedx-vpn01-ovpn-client"
 }
 
+variable "PORT" {
+  default = "1194"
+}
+
+variable "PROTOCOL" {
+  default = "udp"
+}
+
+variable "VPNSERVER_IP" {
+  default = "10.3.0.0"
+}
+
+variable "VPNSERVER_Subnet" {
+  default = "255.255.255.0"
+}
+
 # VM DX Windows Desktop 10  SETTINGS - SIZE,NIC,KEYS,ETC --------------------------------------------------------------------------
 variable "dx_windows10_vmsize" {
   description = "Size of the VMs"
