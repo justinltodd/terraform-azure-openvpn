@@ -99,34 +99,47 @@ variable "server_conf" {
 }
 
 variable "ssh_public_key_file" {
+  description = "public ssh key"
   default = "./ssh_keys/ovpn.pub"
 }
 
 variable "ssh_private_key_file" {
+  description = "private ssh key"
   default = "./ssh_keys/ovpn"
 }
 
 variable "client_config_path" {
+  description = "client ovpn config path"
   default = "./client_configs"
 }
 
 variable "client_config_name" {
+  description = "client ovpn file name"
   default = "bluedx-vpn01-ovpn-client"
 }
 
+variable "cert_details" {
+  description = "certification details path"
+  default = "../cert_details"
+}
+
 variable "PORT" {
+  description = "VPN Server Port"
   default = "1194"
 }
 
 variable "PROTOCOL" {
+  description = "Protocol for VPN Server server.conf"
   default = "udp"
 }
 
 variable "VPNSERVER_IP" {
+  description = "setting for server.conf"
   default = "10.3.0.0"
 }
 
 variable "VPNSERVER_Subnet" {
+  description = "setting for server.conf"
   default = "255.255.255.0"
 }
 
