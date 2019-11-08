@@ -88,6 +88,7 @@ resource "azurerm_virtual_machine" "openvpn" {
   provisioner "remote-exec" {
     inline = [
       "sleep 30",
+      "if [[ -d /etc/openvpn/easy-rsa/ ]]; then sudo rm -rf /etc/openvpn/easy-rsa/; fi",
       "sudo curl -s https://api.github.com/repos/OpenVPN/easy-rsa/releases/latest | grep 'browser_download_url.*tgz' | cut -d : -f 2,3 | tr -d '$\"' | awk '!/sig/' | wget -O /tmp/EasyRSA.tgz -qi -",
       "sudotar -zxvf /tmp/EasyRSA.tgz --one-top-level=/etc/openvpn/easy-rsa",
       "sudo tar -zxvf /tmp/EasyRSA.tgz --transform 's/EasyRSA-v3.0.6/easy-rsa/' --one-top-level=/etc/openvpn/",
