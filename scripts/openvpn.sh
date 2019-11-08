@@ -97,7 +97,7 @@ fi
 
 # Get easy-rsa
 curl -s https://api.github.com/repos/OpenVPN/easy-rsa/releases/latest | grep "browser_download_url.*tgz" | cut -d : -f 2,3 | tr -d '"' | awk '!/sig/' | wget -O /tmp/EasyRSA-unix-$EASYRSA.tgz -qi -
-tar -zxvf EasyRSA-unix-$EASYRSA.tgz --one-top-level=/etc/openvpn/easy-rsa
+tar -zxvf /tmp/EasyRSA.tgz --transform 's/EasyRSA-v3.0.6/easy-rsa/' --one-top-level=/etc/openvpn/
 chown -R root:root /etc/openvpn/easy-rsa/
 rm -rf /tmp/EasyRSA-unix-$EASYRSA.tgz
 cd /etc/openvpn/easy-rsa/
