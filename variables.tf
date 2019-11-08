@@ -84,10 +84,12 @@ variable "vpnserver_nic" {
 }
 
 variable "build_vpnserver" {
+  description = "openvpn build script"
   default = "./scripts/openvpn.sh"
 }
 
 variable "dh_pem" {
+  description = "DH parameters file using the predefined ffdhe2048 group"
   default = "./scripts/dh.pem"
 }
 
