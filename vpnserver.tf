@@ -105,6 +105,25 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 30",
+      "IP=$(ip addr | grep inet | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | cut -d '/' -f 1 | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}') | echo 'local' $IP >> /etc/openvpn/server/server.conf",
+      "echo 'port ${var.PORT}' >> /etc/openvpn/server/server.conf",
+      "echo 'proto ${var.PROTOCOL}' >> /etc/openvpn/server/server.conf",
+      "echo 'server ${var.VPN_IP} ${var.VPNSERVER_Subnet}' >> /etc/openvpn/server/server.conf",
+      "echo 'dev tun' >> /etc/openvpn/server/server.conf", 
+      "echo 'ca ca.crt' >> /etc/openvpn/server/server.conf",
+      "echo 'cert server.crt' >> /etc/openvpn/server/server.conf",
+      "echo 'key server.key' >> /etc/openvpn/server/server.conf",
+      "echo 'dh dh.pem' >> /etc/openvpn/server/server.conf",
+      "echo 'auth 'SHA512' >> /etc/openvpn/server/server.conf",
+      "echo 'tls-crypt tc.key' >> /etc/openvpn/server/server.conf",
+      "echo 'topology subnet' >> /etc/openvpn/server/server.conf",
+      "echo 'ifconfig-pool-persist ipp.txt' >> /etc/openvpn/server/server.conf",
+    ]
+  }
+
   provisioner "file" {
     source     = "${var.dh_pem}"
     destination = "/etc/openvpn/server/dh.pem"

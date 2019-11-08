@@ -84,13 +84,18 @@ variable "vpnserver_nic" {
 }
 
 variable "build_vpnserver" {
-  description = "openvpn build script"
+  description = "openvpn build template script"
   default = "./scripts/openvpn.sh"
 }
 
 variable "dh_pem" {
   description = "DH parameters file using the predefined ffdhe2048 group"
   default = "./scripts/dh.pem"
+}
+
+variable "server_conf" {
+  description = "VPN Server Configuration template file"
+  default = "./scripts/server.conf"
 }
 
 variable "ssh_public_key_file" {
