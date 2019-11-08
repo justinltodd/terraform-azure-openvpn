@@ -106,10 +106,11 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
+  ## Get IP address and add it to server.conf
   provisioner "remote-exec" {
     inline = [
       "sleep 30",
-      "IP=$(ip addr | grep inet | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | cut -d '/' -f 1 | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}') | echo 'local' $IP >> /etc/openvpn/server/server.conf",
+      "IP=$(ip addr | grep inet | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | cut -d '/' -f 1 | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'| head -1) | echo 'local' $IP >> /etc/openvpn/server/server.conf",
     ]
   }
 
