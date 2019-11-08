@@ -106,14 +106,19 @@ resource "azurerm_virtual_machine" "openvpn" {
   }
 
   provisioner "file" {
+    source     = "${var.dh_pem}"
+    destination = "/etc/openvpn/server/dh.pem"
+  }
+
+  provisioner "file" {
     content     = "${var.build_vpnserver}"
-    destination = "/tmp/${var.build_vpnserver}"
+    destination = "/tmp/openvpn.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/${var.build_vpnserver}",
-      "sudo /tmp/${var.build_vpnserver} --adminpassword=dxPassword1234 --host=${var.vpnserver_hostname}.centralus.cloudapp.azure.com",
+      "chmod +x /tmp/openvpn.sh",
+      "sudo /tmp/openvpn.sh --adminpassword=dxPassword1234 --host=${var.vpnserver_hostname}.centralus.cloudapp.azure.com",
     ]
   }
 
