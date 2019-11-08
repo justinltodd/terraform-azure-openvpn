@@ -98,6 +98,11 @@ variable "server_conf" {
   default = "./scripts/server.conf"
 }
 
+variable "client_template" {
+  description = "VPN client ovpn template file"
+  default = "./scripts/client-common.txt"
+}
+
 variable "ssh_public_key_file" {
   description = "public ssh key"
   default = "./ssh_keys/ovpn.pub"
