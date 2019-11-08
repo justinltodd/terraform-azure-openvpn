@@ -112,6 +112,16 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
+  ## Enable net.ipv4.ip_forward for the system
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 10",
+      "sudo sed -i '/\<net.ipv4.ip_forward\>/c\net.ipv4.ip_forward=1' /etc/sysctl.conf",
+      "if ! grep -q '\<net.ipv4.ip_forward\>' /etc/sysctl.conf; then sudo echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf; fi",
+      "sudo echo 1 > /proc/sys/net/ipv4/ip_forwar",
+    ]
+  }
+
   provisioner "file" {
     source     = "${var.dh_pem}"
     destination = "/etc/openvpn/server/dh.pem"
