@@ -101,7 +101,7 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo ./easyrsa gen-crl",
       "sudo cp pki/ca.crt pki/private/ca.key pki/dh.pem pki/issued/server.crt pki/private/server.key /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn",
       "sudo chown nobody:nogroup /etc/openvpn/crl.pem",
-      "sudo openvpn --genkey --secret /etc/openvpn/ta.key"
+      "sudo openvpn --genkey --secret /etc/openvpn/ta.key",
     ]
   }
 
