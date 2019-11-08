@@ -132,7 +132,7 @@ key server.key
 dh dh.pem
 tls-auth ta.key 0
 topology subnet
-server 10.8.0.0 255.255.255.0
+server 10.3.0.0 255.255.255.0
 ifconfig-pool-persist ipp.txt" > /etc/openvpn/server.conf
 echo 'push "redirect-gateway def1 bypass-dhcp"' >> /etc/openvpn/server.conf
 
@@ -163,12 +163,12 @@ if pgrep firewalld; then
 	# We don't use --add-service=openvpn because that would only work with
 	# the default port and protocol.
 	firewall-cmd --zone=public --add-port=$PORT/$PROTOCOL
-	firewall-cmd --zone=trusted --add-source=10.8.0.0/24
+	firewall-cmd --zone=trusted --add-source=10.3.0.0/24
 	firewall-cmd --permanent --zone=public --add-port=$PORT/$PROTOCOL
-	firewall-cmd --permanent --zone=trusted --add-source=10.8.0.0/24
+	firewall-cmd --permanent --zone=trusted --add-source=10.3.0.0/24
 	# Set NAT for the VPN subnet
-	firewall-cmd --direct --add-rule ipv4 nat POSTROUTING 0 -s 10.8.0.0/24 -j SNAT --to $IP
-	firewall-cmd --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -s 10.8.0.0/24 -j SNAT --to $IP
+	firewall-cmd --direct --add-rule ipv4 nat POSTROUTING 0 -s 10.3.0.0/24 -j SNAT --to $IP
+	firewall-cmd --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -s 10.3.0.0/24 -j SNAT --to $IP
 else
 	# Needed to use rc.local with some systemd distros
 	if [[ "$OS" = 'debian' && ! -e $RCLOCAL ]]; then
@@ -177,17 +177,17 @@ exit 0' > $RCLOCAL
 	fi
 	chmod +x $RCLOCAL
 	# Set NAT for the VPN subnet
-	iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to $IP
-	sed -i "1 a\iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j SNAT --to $IP" $RCLOCAL
+	iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -j SNAT --to $IP
+	sed -i "1 a\iptables -t nat -A POSTROUTING -s 10.3.0.0/24 -j SNAT --to $IP" $RCLOCAL
 	if iptables -L -n | grep -qE '^(REJECT|DROP)'; then
 		# If iptables has at least one REJECT rule, we asume this is needed.
 		# Not the best approach but I can't think of other and this shouldn't
 		# cause problems.
 		iptables -I INPUT -p $PROTOCOL --dport $PORT -j ACCEPT
-		iptables -I FORWARD -s 10.8.0.0/24 -j ACCEPT
+		iptables -I FORWARD -s 10.3.0.0/24 -j ACCEPT
 		iptables -I FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
 		sed -i "1 a\iptables -I INPUT -p $PROTOCOL --dport $PORT -j ACCEPT" $RCLOCAL
-		sed -i "1 a\iptables -I FORWARD -s 10.8.0.0/24 -j ACCEPT" $RCLOCAL
+		sed -i "1 a\iptables -I FORWARD -s 10.3.0.0/24 -j ACCEPT" $RCLOCAL
 		sed -i "1 a\iptables -I FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT" $RCLOCAL
 	fi
 fi
