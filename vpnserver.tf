@@ -149,7 +149,7 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
-  ## Enable openvpn Service and restart 
+  ## Enable openvpn Service and restart service 
   provisioner "remote-exec" {
     inline = [
       "sudo systemctl enable openvpn@server.servic.service",
