@@ -88,6 +88,11 @@ variable "build_vpnserver" {
   default = "./scripts/openvpn.sh"
 }
 
+variable "lighttpd_template" {
+  description = "lighttpd.conf build template"
+  default = "./scripts/lighttpd.conf"
+}
+
 variable "dh_pem" {
   description = "DH parameters file using the predefined ffdhe2048 group"
   default = "./scripts/dh.pem"
