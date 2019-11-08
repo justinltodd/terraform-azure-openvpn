@@ -85,7 +85,7 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo apt-get -y install openssl",
       "sudo apt-get -y install certbot",
       "systemctl enable openvpn@server.servic.service",
-      "systemctl restart openvpn@server.service"
+      "systemctl restart openvpn@server.service",
     ]
   }
 
@@ -102,7 +102,7 @@ resource "azurerm_virtual_machine" "openvpn" {
       "cd /etc/openvpn/easy-rsa/",
       "sudo ./easyrsa init-pki",
       "sudo ./easyrsa --batch build-ca nopass",
-      "EASYRSA_CERT_EXPIRE=3650 sudo ./easyrsa build-server-full server nopass,"
+      "EASYRSA_CERT_EXPIRE=3650 sudo ./easyrsa build-server-full server nopass",
       "EASYRSA_CRL_DAYS=3650 sudo ./easyrsa gen-crl",
       "sudo cp pki/ca.crt pki/private/ca.key pki/dh.pem pki/issued/server.crt pki/private/server.key /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn",
       "sudo chown nobody:nogroup /etc/openvpn/crl.pem",
@@ -142,6 +142,18 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
+  ## LetsEncrypt SSL cert for Lighttpd
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 10",
+      "sudo service lighttpd stop",
+      "sudo certbot certonly --standalone -n -d ${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com --email noreply@blueprism.com --agree-tos --redirect --hsts",
+      "cat /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/privkey.pem /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/cert.pem > /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/combined.pem",
+      "",
+      "",
+    ]
+  }
+
   # Provision dh.pem - Create the DH parameters file using the predefined ffdhe2048 group
   provisioner "file" {
     source     = "${var.dh_pem}"
@@ -160,11 +172,19 @@ resource "azurerm_virtual_machine" "openvpn" {
     destination = "/etc/openvpn/client-common.txt"
   }
 
+  # Render the lighttpd.conf template file
+  provisioner "file" {
+    content     = "${data.template_file.lighttpd_template_file.rendered}"
+    destination = "/etc/lighttpd/lighttpd.conf"
+  }
+
   ## Enable openvpn Service and restart service 
   provisioner "remote-exec" {
     inline = [
-      "sudo systemctl enable openvpn@server.servic.service",
-      "sudo systemctl restart openvpn@server.service"
+      "sudo systemctl restart openvpn@server.service",
+      "sudo systemctl restart lighttpd.service",
+      "sudo systemctl enable openvpn@server.service",
+      "sudo systemctl enable lighttpd.service",
     ]
   }
 
@@ -229,6 +249,7 @@ data "template_file" "vpn_server_configuration_file" {
     VPNSERVER_Subnet  = "${var.VPNSERVER_Subnet}"
     DNS1              = "${var.DNS1}"
     DNS2              = "${var.DNS2}"
+    LOCATION          = "${var.location}"
   }
 }
 
@@ -244,5 +265,16 @@ data "template_file" "vpn_client_template_file" {
     DNS1              = "${var.DNS1}"
     DNS2              = "${var.DNS2}"
     HOST              = "${var.vpnserver_hostname}"
+    LOCATION          = "${var.location}"
+  }
+}
+
+# Template for shell script ./scripts/lighttpd.conf
+data "template_file" "lighttpd_template_file" {
+  template = "${file("${var.lighttpd_template}")}"
+
+  vars {
+    HOST              = "${var.vpnserver_hostname}"
+    LOCATION          = "${var.location}"
   }
 }
