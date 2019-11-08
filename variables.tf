@@ -87,6 +87,10 @@ variable "build_vpnserver" {
   default = "./scripts/openvpn.sh"
 }
 
+variable "dh_pem" {
+  default = "./scripts/dh.pem"
+}
+
 variable "ssh_public_key_file" {
   default = "./ssh_keys/ovpn.pub"
 }
