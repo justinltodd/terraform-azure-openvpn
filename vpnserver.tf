@@ -201,7 +201,7 @@ data "template_file" "deployment_shell_script" {
   }
 }
 
-# Template for shell script ./scripts/openvpn.sh
+# Template for shell script ./scripts/server.conf
 data "template_file" "vpn_server_configuration_file" {
   template = "${file("${var.server_conf}")}"
 
