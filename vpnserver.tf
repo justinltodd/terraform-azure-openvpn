@@ -132,6 +132,7 @@ resource "azurerm_virtual_machine" "openvpn" {
   provisioner "remote-exec" {
     inline = [
       "sleep 10",
+      "sudo rm /var/www/html/*",
       "sudo mkdir /etc/openvpn/clients/",
       "chown -R www-data:www-data /etc/openvpn/easy-rsa",
       "chown -R www-data:www-data /etc/openvpn/clients/",
@@ -142,6 +143,18 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
+    # Setup script for lighttpd client website
+  provisioner "file" {
+    source     = "./scripts/index.sh"
+    destination = "/var/www/html/index.sh"
+  }
+
+  # Setup script for lighttpd client website
+  provisioner "file" {
+    source     = "./scripts/download.sh"
+    destination = "/var/www/html/download.sh"
+  }
+
   ## LetsEncrypt SSL cert for Lighttpd
   provisioner "remote-exec" {
     inline = [
@@ -149,8 +162,13 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo service lighttpd stop",
       "sudo certbot certonly --standalone -n -d ${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com --email noreply@blueprism.com --agree-tos --redirect --hsts",
       "cat /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/privkey.pem /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/cert.pem > /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/combined.pem",
-      "",
-      "",
+      "sudo chown -R www-data:www-data /var/www/html/",
+      "sudo mv /etc/lighttpd/lighttpd.conf /etc/lighttpd/lighttpd.conf.$$",
+      "sudo echo '${var.vpnserver_username}:${var.vpnserver_password}' >> /etc/lighttpd/.lighttpdpassword",
+      "sudo chown :lighttpd /etc/letsencrypt",
+      "sudo chown :lighttpd /etc/letsencrypt/live",
+      "sudo chmod g+x /etc/letsencrypt",
+      "sduo chmod g+x /etc/letsencrypt/live",
     ]
   }
 
@@ -205,7 +223,7 @@ resource "azurerm_virtual_machine" "openvpn" {
   }
 
   provisioner "local-exec" {
-    command = "scp -o StrictHostKeyChecking=no -i ${var.ssh_private_key_file} ${var.vpnserver_username}@${azurerm_public_ip.PublicIP.ip_address}:/etc/openvpn/client.ovpn ${var.client_config_path}/${var.client_config_name}.ovpn"
+    command = "scp -o StrictHostKeyChecking=no -i ${var.ssh_private_key_file} ${var.vpnserver_username}@${var.VPNSERVER_IP}:/etc/openvpn/client.ovpn ${var.client_config_path}/${var.client_config_name}.ovpn"
   }
 
   provisioner "remote-exec" {
