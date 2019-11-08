@@ -125,6 +125,20 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
+  ## Adjust permissions for openvpn to be available via HTTPS 
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 10",
+      "sudo mkdir /etc/openvpn/clients/",
+      "chown -R www-data:www-data /etc/openvpn/easy-rsa",
+      "chown -R www-data:www-data /etc/openvpn/clients/",
+      "chmod -R 755 /etc/openvpn/",
+      "chmod -R 777 /etc/openvpn/crl.pem",
+      "chmod g+s /etc/openvpn/clients/",
+      "chmod g+s /etc/openvpn/easy-rsa/",
+    ]
+  }
+
   # Provision dh.pem - Create the DH parameters file using the predefined ffdhe2048 group
   provisioner "file" {
     source     = "${var.dh_pem}"
