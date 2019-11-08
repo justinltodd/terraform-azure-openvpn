@@ -9,7 +9,7 @@
 1. Download the installer script.
 
 	````
-	wget https://raw.githubusercontent.com/theonemule/simple-openvpn-server/master/openvpn.sh
+	wget https://bitbucket.org/blueprism-tsa/dynamic_environment/src/master/scripts/openvpn.sh
 	````
 
 1. Make the script executable
