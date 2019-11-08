@@ -121,7 +121,7 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sleep 10",
       "sudo sed -i '/\<net.ipv4.ip_forward\>/c\net.ipv4.ip_forward=1' /etc/sysctl.conf",
       "if ! grep -q '\<net.ipv4.ip_forward\>' /etc/sysctl.conf; then sudo echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf; fi",
-      "sudo echo 1 > /proc/sys/net/ipv4/ip_forwar",
+      "sudo echo 1 > /proc/sys/net/ipv4/ip_forward",
     ]
   }
 
@@ -129,11 +129,6 @@ resource "azurerm_virtual_machine" "openvpn" {
   provisioner "file" {
     source     = "${var.dh_pem}"
     destination = "/etc/openvpn/server/dh.pem"
-  }
-
-  provisioner "file" {
-    content     = "${data.template_file.deployment_shell_script.rendered}"
-    destination = "/tmp/openvpn.sh"
   }
 
   # Render the server.conf template file
@@ -146,13 +141,6 @@ resource "azurerm_virtual_machine" "openvpn" {
   provisioner "file" {
     content     = "${data.template_file.vpn_client_template_file.rendered}"
     destination = "/etc/openvpn/client-common.txt"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/openvpn.sh",
-      "sudo /tmp/openvpn.sh --adminpassword=dxPassword1234 --host=${var.vpnserver_hostname}.centralus.cloudapp.azure.com",
-    ]
   }
 
   ## Enable openvpn Service and restart service 
@@ -202,7 +190,6 @@ resource "azurerm_virtual_machine" "openvpn" {
     command = "rm -f ${var.client_config_path}/${var.client_config_name}.ovpn"
     when    = "destroy"
   }
-}
 
 # Template for shell script ./scripts/openvpn.sh
 data "template_file" "deployment_shell_script" {
