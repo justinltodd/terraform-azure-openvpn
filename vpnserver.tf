@@ -142,6 +142,12 @@ resource "azurerm_virtual_machine" "openvpn" {
     destination = "/etc/openvpn/server/server.conf"
   }
 
+  # Render the client-common.txt template file
+  provisioner "file" {
+    content     = "${data.template_file.vpn_client_template_file.rendered}"
+    destination = "/etc/openvpn/client-common.txt"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/openvpn.sh",
@@ -209,7 +215,7 @@ data "template_file" "deployment_shell_script" {
 }
 
 # Template for shell script ./scripts/openvpn.sh
-ata "template_file" "vpn_server_configuration_file" {
+data "template_file" "vpn_server_configuration_file" {
   template = "${file("${var.server_conf}")}"
 
   vars {
@@ -219,5 +225,20 @@ ata "template_file" "vpn_server_configuration_file" {
     VPNSERVER_Subnet  = "${var.VPNSERVER_Subnet}"
     DNS1              = "${var.DNS1}"
     DNS2              = "${var.DNS2}"
+  }
+}
+
+# Template for shell script ./scripts/client-common.txt
+data "template_file" "vpn_client_template_file" {
+  template = "${file("${var.client_template}")}"
+
+  vars {
+    PORT              = "${var.PORT}"
+    PROTOCOL          = "${var.PROTOCOL}"
+    VPN_IP            = "${var.VPN_IP}"
+    VPNSERVER_Subnet  = "${var.VPNSERVER_Subnet}"
+    DNS1              = "${var.DNS1}"
+    DNS2              = "${var.DNS2}"
+    HOST              = "${var.vpnserver_hostname}"
   }
 }
