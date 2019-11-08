@@ -65,6 +65,46 @@ resource "azurerm_virtual_machine" "openvpn" {
     private_key = "${file(var.private_key_file)}"
   }
 
+  # Install Openvpn and other required binarys
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 30",
+      "sudo apt-get update",
+      "sudo apt-get -y upgrade",
+      "sudo apt-get -y install curl wget",
+      "curl -s https://swupdate.openvpn.net/repos/repo-public.gpg | apt-key add -",
+      "echo 'deb http://build.openvpn.net/debian/openvpn/stable bionic main' > /etc/apt/sources.list.d/openvpn-aptrepo.list",
+      "sudo apt-get update",
+      "sudo apt-get -y install gcc",
+      "sudo apt-get -y install make",
+      "sudo apt-get -y install lighttpd",
+      "sudo apt-get -y install openvpn",
+      "sudo apt-get -y install ca-certificates",
+      "sudo apt-get -y install openssl",
+    ]
+  }
+
+  # Install Latest verions of EasyRSA and setup CA Authority
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 30",
+      "sudo curl -s https://api.github.com/repos/OpenVPN/easy-rsa/releases/latest | grep 'browser_download_url.*tgz' | cut -d : -f 2,3 | tr -d '$\"' | awk '!/sig/' | wget -O /tmp/EasyRSA.tgz -qi -",
+      "sudotar -zxvf /tmp/EasyRSA.tgz --one-top-level=/etc/openvpn/easy-rsa",
+      "sudo tar -zxvf /tmp/EasyRSA.tgz --transform 's/EasyRSA-v3.0.6/easy-rsa/' --one-top-level=/etc/openvpn/",
+      "sudo chown -R root:root /etc/openvpn/easy-rsa/",
+      "sudo rm -rf /tmp/EasyRSA.tgz",
+      "cd /etc/openvpn/easy-rsa/",
+      "sudo ./easyrsa init-pki",
+      "sudo ./easyrsa --batch build-ca nopass",
+      "sudo ./easyrsa gen-dh",
+      "sudo ./easyrsa build-server-full server nopass,"
+      "sudo ./easyrsa gen-crl",
+      "sudo cp pki/ca.crt pki/private/ca.key pki/dh.pem pki/issued/server.crt pki/private/server.key /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn",
+      "sudo chown nobody:nogroup /etc/openvpn/crl.pem",
+      "sudo openvpn --genkey --secret /etc/openvpn/ta.key"
+    ]
+  }
+
   provisioner "file" {
     content     = "${var.build_vpnserver}"
     destination = "/tmp/${var.build_vpnserver}"
@@ -73,7 +113,7 @@ resource "azurerm_virtual_machine" "openvpn" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/${var.build_vpnserver}",
-      "sudo /tmp/${var.build_vpnserver} --adminpassword=dxPassword1234 --host=${var.vpnserver_hostname}.adsadadscom",
+      "sudo /tmp/${var.build_vpnserver} --adminpassword=dxPassword1234 --host=${var.vpnserver_hostname}.centralus.cloudapp.azure.com",
     ]
   }
 
