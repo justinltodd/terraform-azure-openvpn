@@ -81,6 +81,8 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo apt-get -y install openvpn",
       "sudo apt-get -y install ca-certificates",
       "sudo apt-get -y install openssl",
+      "systemctl enable openvpn@server.servic.service",
+      "systemctl restart openvpn@server.service"
     ]
   }
 
@@ -97,9 +99,8 @@ resource "azurerm_virtual_machine" "openvpn" {
       "cd /etc/openvpn/easy-rsa/",
       "sudo ./easyrsa init-pki",
       "sudo ./easyrsa --batch build-ca nopass",
-      "sudo ./easyrsa gen-dh",
-      "sudo ./easyrsa build-server-full server nopass,"
-      "sudo ./easyrsa gen-crl",
+      "EASYRSA_CERT_EXPIRE=3650 sudo ./easyrsa build-server-full server nopass,"
+      "EASYRSA_CRL_DAYS=3650 sudo ./easyrsa gen-crl",
       "sudo cp pki/ca.crt pki/private/ca.key pki/dh.pem pki/issued/server.crt pki/private/server.key /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn",
       "sudo chown nobody:nogroup /etc/openvpn/crl.pem",
       "sudo openvpn --genkey --secret /etc/openvpn/ta.key",
@@ -124,6 +125,7 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
+  # Provision dh.pem - Create the DH parameters file using the predefined ffdhe2048 group
   provisioner "file" {
     source     = "${var.dh_pem}"
     destination = "/etc/openvpn/server/dh.pem"
@@ -134,7 +136,8 @@ resource "azurerm_virtual_machine" "openvpn" {
     destination = "/tmp/openvpn.sh"
   }
 
-    provisioner "file" {
+  # Render the server.conf template file
+  provisioner "file" {
     content     = "${data.template_file.vpn_server_configuration_file.rendered}"
     destination = "/etc/openvpn/server/server.conf"
   }
@@ -143,6 +146,14 @@ resource "azurerm_virtual_machine" "openvpn" {
     inline = [
       "chmod +x /tmp/openvpn.sh",
       "sudo /tmp/openvpn.sh --adminpassword=dxPassword1234 --host=${var.vpnserver_hostname}.centralus.cloudapp.azure.com",
+    ]
+  }
+
+  ## Enable openvpn Service and restart 
+  provisioner "remote-exec" {
+    inline = [
+      "sudo systemctl enable openvpn@server.servic.service",
+      "sudo systemctl restart openvpn@server.service"
     ]
   }
 
