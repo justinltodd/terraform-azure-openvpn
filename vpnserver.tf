@@ -118,8 +118,13 @@ resource "azurerm_virtual_machine" "openvpn" {
   }
 
   provisioner "file" {
-    content     = "${var.build_vpnserver}"
+    content     = "${data.template_file.deployment_shell_script.rendered}"
     destination = "/tmp/openvpn.sh"
+  }
+
+    provisioner "file" {
+    content     = "${data.template_file.vpn_server_configuration_file.rendered}"
+    destination = "/etc/openvpn/server/server.conf"
   }
 
   provisioner "remote-exec" {
@@ -180,4 +185,16 @@ data "template_file" "deployment_shell_script" {
   }
 }
 
+# Template for shell script ./scripts/openvpn.sh
+ata "template_file" "vpn_server_configuration_file" {
+  template = "${file("${var.server_conf}")}"
 
+  vars {
+    PORT              = "${var.PORT}"
+    PROTOCOL          = "${var.PROTOCOL}"
+    VPN_IP            = "${var.VPN_IP}"
+    VPNSERVER_Subnet  = "${var.VPNSERVER_Subnet}"
+    DNS1              = "${var.DNS1}"
+    DNS2              = "${var.DNS2}"
+  }
+}
