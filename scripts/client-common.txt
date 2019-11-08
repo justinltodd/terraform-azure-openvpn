@@ -1,10 +1,10 @@
 # client-common.txt is created so we have a template to add further users later
 client
 dev tun
-proto ${var.PROTOCOL}
+proto ${PROTOCOL}
 sndbuf 0
 rcvbuf 0
-remote ${var.vpnserver_hostname}.centralus.cloudapp.azure.com ${var.PORT}
+remote ${HOST}.${LOCATION}.cloudapp.azure.com ${PORT}
 resolv-retry infinite
 nobind
 persist-key
