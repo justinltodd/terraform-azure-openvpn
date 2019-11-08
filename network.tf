@@ -5,7 +5,7 @@
 # Virtual Network 
 resource "azurerm_virtual_network" "vnet" {
   name                = "${var.virtual_network}"
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["10.0.0.0/8"]
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
 }
@@ -15,7 +15,7 @@ resource "azurerm_subnet" "GatewaySubnet" {
   name                 = "${var.gateway_subnet}"
   resource_group_name  = "${azurerm_resource_group.dx01.name}"
   virtual_network_name = "${azurerm_virtual_network.vnet.name}"
-  address_prefix       = "10.0.1.0/24"
+  address_prefix       = "10.1.0.0/24"
 }
 
 # Management backend subnet for administrative purposes
@@ -23,7 +23,7 @@ resource "azurerm_subnet" "management" {
   name                 = "${var.mgmt_backend_subnet}"
   resource_group_name  = "${azurerm_resource_group.dx01.name}"
   virtual_network_name = "${azurerm_virtual_network.vnet.name}"
-  address_prefix       = "10.0.2.0/24"
+  address_prefix       = "10.2.0.0/24"
 }
 
 # First initial subnet for dx windows 10 instances
@@ -31,7 +31,7 @@ resource "azurerm_subnet" "frontend" {
   name                 = "${var.vpn_frontend_subnet}"
   resource_group_name  = "${azurerm_resource_group.dx01.name}"
   virtual_network_name = "${azurerm_virtual_network.vnet.name}"
-  address_prefix       = "10.0.3.0/24"
+  address_prefix       = "10.3.0.0/24"
 }
 
 # DX VPN Server  Network Security Group
