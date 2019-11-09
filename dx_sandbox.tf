@@ -27,7 +27,7 @@ resource "azurerm_virtual_machine" "dx_windows" {
   location              = "${var.location}"
   resource_group_name   = "${azurerm_resource_group.dx01.name}"
   network_interface_ids = ["${azurerm_network_interface.dx-WindowsNic.id}"]
-  vm_size               = "${dx_windows10_vmsize}"
+  vm_size               = "${var.dx_windows10_vmsize}"
 
   storage_os_disk {
     name              = "${var.windows_hostname}_os"
