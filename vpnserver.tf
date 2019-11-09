@@ -298,11 +298,11 @@ resource "azurerm_virtual_machine" "openvpn" {
 
 # VPNSERVER PublicIP
 resource "azurerm_public_ip" "PublicIP" {
-  name                         = "${var.vpnserver_hostname}-public"
-  resource_group_name          = "${azurerm_resource_group.dx01.name}"
-  location                     = "${var.location}"
-  public_ip_address_allocation = "static"
-  domain_name_label            = "${var.vpnserver_hostname}" #//adds dns using hostname.centralus.cloudapp.azure.com
+  name                = "${var.vpnserver_hostname}-public"
+  resource_group_name = "${azurerm_resource_group.dx01.name}"
+  location            = "${var.location}"
+  allocation_method   = "static"
+  domain_name_label   = "${var.vpnserver_hostname}" #//adds dns using hostname.centralus.cloudapp.azure.com
 
   tags = {
     environment = "VPN Server: ${var.vpnserver_hostname}"
