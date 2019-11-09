@@ -1,5 +1,5 @@
 # Generate random text for a unique storage account name
-resource "random_id" "randomId" {
+resource "random_id" "dx_randomId" {
   keepers = {
     # Generate a new ID only when a new resource group is defined
     resource_group = "${azurerm_resource_group.dx01.name}"
@@ -10,7 +10,7 @@ resource "random_id" "randomId" {
 
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "dx_windows10_storage" {
-  name                     = "diag${random_id.randomId.hex}"
+  name                     = "diag${random_id.dx_randomId.hex}"
   resource_group_name      = "${azurerm_resource_group.dx01.name}"
   location                 = "${var.location}"
   account_tier             = "Standard"
