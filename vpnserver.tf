@@ -110,21 +110,19 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
-  ## Get IP address and add it to server.conf
+  # Setup script for lighttpd client website
+  provisioner "file" {
+    source      = "./scripts/networking.sh"
+    destination = "/tmp/networking.sh"
+  }
+
+  ## Enable net.ipv4.ip_forward for the system and ## Get IP address and add it to server.conf
   provisioner "remote-exec" {
     inline = [
       "sleep 30",
-      "IP=$(ip addr | grep inet | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | cut -d '/' -f 1 | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'| head -1) | echo 'local' $IP >> /etc/openvpn/server/server.conf",
-    ]
-  }
-
-  ## Enable net.ipv4.ip_forward for the system
-  provisioner "remote-exec" {
-    inline = [
-      "sleep 10",
-      "sudo sed -i '/\<net.ipv4.ip_forward\>/c\net.ipv4.ip_forward=1' /etc/sysctl.conf",
-      "if ! grep -q '\<net.ipv4.ip_forward\>' /etc/sysctl.conf; then sudo echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf; fi",
-      "sudo echo 1 > /proc/sys/net/ipv4/ip_forward",
+      "sudo chmod 775 /tmp/networking.sh",
+      "sudo /tmp/networking.sh",
+      "sudo rm -rf /tmp/networking.sh",
     ]
   }
 
@@ -143,15 +141,15 @@ resource "azurerm_virtual_machine" "openvpn" {
     ]
   }
 
-    # Setup script for lighttpd client website
+  # Setup script for lighttpd client website
   provisioner "file" {
-    source     = "./scripts/index.sh"
+    source      = "./scripts/index.sh"
     destination = "/var/www/html/index.sh"
   }
 
   # Setup script for lighttpd client website
   provisioner "file" {
-    source     = "./scripts/download.sh"
+    source      = "./scripts/download.sh"
     destination = "/var/www/html/download.sh"
   }
 
@@ -168,13 +166,13 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo chown :lighttpd /etc/letsencrypt",
       "sudo chown :lighttpd /etc/letsencrypt/live",
       "sudo chmod g+x /etc/letsencrypt",
-      "sduo chmod g+x /etc/letsencrypt/live",
+      "sudo chmod g+x /etc/letsencrypt/live",
     ]
   }
 
   # Provision dh.pem - Create the DH parameters file using the predefined ffdhe2048 group
   provisioner "file" {
-    source     = "${var.dh_pem}"
+    source      = "${var.dh_pem}"
     destination = "/etc/openvpn/server/dh.pem"
   }
 
@@ -246,54 +244,55 @@ resource "azurerm_virtual_machine" "openvpn" {
     when    = "destroy"
   }
 
-# Template for shell script ./scripts/openvpn.sh
-data "template_file" "deployment_shell_script" {
-  template = "${file("${var.build_vpnserver}")}"
+  # Template for shell script ./scripts/openvpn.sh
+  data "template_file" "deployment_shell_script" {
+    template = "${file("${var.build_vpnserver}")}"
 
-  vars {
-    cert_details       = "${file(var.cert_details)}"
-    client_config_name = "${var.client_config_name}"
+    vars {
+      cert_details       = "${file(var.cert_details)}"
+      client_config_name = "${var.client_config_name}"
+    }
   }
-}
 
-# Template for shell script ./scripts/server.conf
-data "template_file" "vpn_server_configuration_file" {
-  template = "${file("${var.server_conf}")}"
+  # Template for shell script ./scripts/server.conf
+  data "template_file" "vpn_server_configuration_file" {
+    template = "${file("${var.server_conf}")}"
 
-  vars {
-    PORT              = "${var.PORT}"
-    PROTOCOL          = "${var.PROTOCOL}"
-    VPN_IP            = "${var.VPN_IP}"
-    VPNSERVER_Subnet  = "${var.VPNSERVER_Subnet}"
-    DNS1              = "${var.DNS1}"
-    DNS2              = "${var.DNS2}"
-    LOCATION          = "${var.location}"
+    vars {
+      PORT             = "${var.PORT}"
+      PROTOCOL         = "${var.PROTOCOL}"
+      VPN_IP           = "${var.VPN_IP}"
+      VPNSERVER_Subnet = "${var.VPNSERVER_Subnet}"
+      DNS1             = "${var.DNS1}"
+      DNS2             = "${var.DNS2}"
+      LOCATION         = "${var.location}"
+    }
   }
-}
 
-# Template for shell script ./scripts/client-common.txt
-data "template_file" "vpn_client_template_file" {
-  template = "${file("${var.client_template}")}"
+  # Template for shell script ./scripts/client-common.txt
+  data "template_file" "vpn_client_template_file" {
+    template = "${file("${var.client_template}")}"
 
-  vars {
-    PORT              = "${var.PORT}"
-    PROTOCOL          = "${var.PROTOCOL}"
-    VPN_IP            = "${var.VPN_IP}"
-    VPNSERVER_Subnet  = "${var.VPNSERVER_Subnet}"
-    DNS1              = "${var.DNS1}"
-    DNS2              = "${var.DNS2}"
-    HOST              = "${var.vpnserver_hostname}"
-    LOCATION          = "${var.location}"
+    vars {
+      PORT             = "${var.PORT}"
+      PROTOCOL         = "${var.PROTOCOL}"
+      VPN_IP           = "${var.VPN_IP}"
+      VPNSERVER_Subnet = "${var.VPNSERVER_Subnet}"
+      DNS1             = "${var.DNS1}"
+      DNS2             = "${var.DNS2}"
+      HOST             = "${var.vpnserver_hostname}"
+      LOCATION         = "${var.location}"
+    }
   }
-}
 
-# Template for shell script ./scripts/lighttpd.conf
-data "template_file" "lighttpd_template_file" {
-  template = "${file("${var.lighttpd_template}")}"
+  # Template for shell script ./scripts/lighttpd.conf
+  data "template_file" "lighttpd_template_file" {
+    template = "${file("${var.lighttpd_template}")}"
 
-  vars {
-    HOST              = "${var.vpnserver_hostname}"
-    LOCATION          = "${var.location}"
+    vars {
+      HOST     = "${var.vpnserver_hostname}"
+      LOCATION = "${var.location}"
+    }
   }
 }
 
@@ -303,10 +302,11 @@ resource "azurerm_public_ip" "PublicIP" {
   resource_group_name          = "${azurerm_resource_group.dx01.name}"
   location                     = "${var.location}"
   public_ip_address_allocation = "static"
-  domain_name_label            = "${var.vpnserver_hostname}"  #//adds dns using hostname.centralus.cloudapp.azure.com
+  domain_name_label            = "${var.vpnserver_hostname}" #//adds dns using hostname.centralus.cloudapp.azure.com
 
   tags = {
     environment = "VPN Server: ${var.vpnserver_hostname}"
+  }
 }
 
 # VPNSERVER Network Interface
@@ -323,7 +323,8 @@ resource "azurerm_network_interface" "vpnserver_nic" {
     public_ip_address_id          = "${azurerm_public_ip.PublicIP.id}"
   }
 
-    tags = {
+  tags = {
     environment = "Windows 10 Desktop: ${var.vpnserver_hostname}"
   }
 }
+
