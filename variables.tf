@@ -6,22 +6,22 @@
 # CREDENTIALS ---------------------------------------------------------------------------------------------------------
 variable "subscription_id" {
   description = "Subscription ID"
-  default = "36483a93-0c29-4b4f-89fd-2b1077a44280"
+  default     = "36483a93-0c29-4b4f-89fd-2b1077a44280"
 }
 
 variable "tenant_id" {
   description = "Tenant ID"
-  default = "8ce308d8-142f-4ba1-8e44-7ac446b0b300"
+  default     = "8ce308d8-142f-4ba1-8e44-7ac446b0b300"
 }
 
 variable "client_id" {
   description = "Client ID"
-  default = "29e008e2-2708-4484-9e78-9a652389124b"
+  default     = "29e008e2-2708-4484-9e78-9a652389124b"
 }
 
 variable "client_secret" {
   description = "Client secret password"
-  default = "Mi2@/mM=4Js3l4xRv:KrCEjHlvGU]N@3"
+  default     = "Mi2@/mM=4Js3l4xRv:KrCEjHlvGU]N@3"
 }
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ variable "client_secret" {
 # REGION LOCATION ---------------------------------------------------------------------------------------------------
 variable "location" {
   description = "Geo Region"
-  default = "Central US"
+  default     = "Central US"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -42,6 +42,7 @@ variable "location" {
 variable "vpnserver_username" {
   description = "The username configured for linux"
   default     = "admin"
+}
 
 variable "vpnserver_password" {
   description = "The password configured for linux"
@@ -51,6 +52,7 @@ variable "vpnserver_password" {
 variable "windows_username" {
   description = "The username for windows account"
   default     = "dxadmin"
+}
 
 variable "windows_password" {
   description = "The password for windows account"
@@ -85,72 +87,72 @@ variable "vpnserver_nic" {
 
 variable "build_vpnserver" {
   description = "openvpn build template script"
-  default = "./scripts/openvpn.sh"
+  default     = "./scripts/openvpn.sh"
 }
 
 variable "lighttpd_template" {
   description = "lighttpd.conf build template"
-  default = "./scripts/lighttpd.conf"
+  default     = "./scripts/lighttpd.conf"
 }
 
 variable "dh_pem" {
   description = "DH parameters file using the predefined ffdhe2048 group"
-  default = "./scripts/dh.pem"
+  default     = "./scripts/dh.pem"
 }
 
 variable "server_conf" {
   description = "VPN Server Configuration template file"
-  default = "./scripts/server.conf"
+  default     = "./scripts/server.conf"
 }
 
 variable "client_template" {
   description = "VPN client ovpn template file"
-  default = "./scripts/client-common.txt"
+  default     = "./scripts/client-common.txt"
 }
 
 variable "ssh_public_key_file" {
   description = "public ssh key"
-  default = "./ssh_keys/ovpn.pub"
+  default     = "./ssh_keys/ovpn.pub"
 }
 
 variable "ssh_private_key_file" {
   description = "private ssh key"
-  default = "./ssh_keys/ovpn"
+  default     = "./ssh_keys/ovpn"
 }
 
 variable "client_config_path" {
   description = "client ovpn config path"
-  default = "./client_configs"
+  default     = "./client_configs"
 }
 
 variable "client_config_name" {
   description = "client ovpn file name"
-  default = "bluedx-vpn01-ovpn-client"
+  default     = "bluedx-vpn01-ovpn-client"
 }
 
 variable "cert_details" {
   description = "certification details path"
-  default = "../cert_details"
+  default     = "../cert_details"
 }
 
 variable "PORT" {
   description = "VPN Server Port"
-  default = "1194"
+  default     = "1194"
 }
 
 variable "PROTOCOL" {
   description = "Protocol for VPN Server server.conf"
-  default = "udp"
+  default     = "udp"
 }
 
 variable "VPNSERVER_IP" {
   description = "setting for server.conf"
-  default = "10.3.0.0"
+  default     = "10.3.0.0"
 }
 
 variable "VPNSERVER_Subnet" {
   description = "setting for server.conf"
-  default = "255.255.255.0"
+  default     = "255.255.255.0"
 }
 
 # VM DX Windows Desktop 10  SETTINGS - SIZE,NIC,KEYS,ETC --------------------------------------------------------------------------
