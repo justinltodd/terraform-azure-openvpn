@@ -296,3 +296,34 @@ data "template_file" "lighttpd_template_file" {
     LOCATION          = "${var.location}"
   }
 }
+
+# VPNSERVER PublicIP
+resource "azurerm_public_ip" "PublicIP" {
+  name                         = "${var.vpnserver_hostname}-public"
+  resource_group_name          = "${azurerm_resource_group.dx01.name}"
+  location                     = "${var.location}"
+  public_ip_address_allocation = "static"
+  domain_name_label            = "${var.vpnserver_hostname}"  #//adds dns using hostname.centralus.cloudapp.azure.com
+
+  tags = {
+    environment = "VPN Server: ${var.vpnserver_hostname}"
+}
+
+# VPNSERVER Network Interface
+resource "azurerm_network_interface" "vpnserver_nic" {
+  name                      = "${var.vpnserver_hostname}Nic01"
+  location                  = "${var.location}"
+  resource_group_name       = "${azurerm_resource_group.dx01.name}"
+  network_security_group_id = "${azurerm_network_security_group.vpn-sg.name}"
+
+  ip_configuration {
+    name                          = "${var.vpnserver_hostname}"
+    subnet_id                     = "${azurerm_subnet.frontend.id}"
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = "${azurerm_public_ip.PublicIP.id}"
+  }
+
+    tags = {
+    environment = "Windows 10 Desktop: ${var.vpnserver_hostname}"
+  }
+}

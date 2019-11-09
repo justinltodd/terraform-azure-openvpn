@@ -94,7 +94,7 @@ resource "azurerm_network_security_rule" "WinRM-out" {
 }
 
 # NOTE: //Opened HTTPS port windows10-sg
-resource "azurerm_network_security_rule" "HTTPS" {
+resource "azurerm_network_security_rule" "windows10_HTTPS" {
   name                        = "HTTPS"
   resource_group_name         = "${azurerm_resource_group.dx01.name}"
   network_security_group_name = "${azurerm_network_security_group.windows10-sg.name}"
@@ -109,7 +109,7 @@ resource "azurerm_network_security_rule" "HTTPS" {
 }
 
 # NOTE: this allows SSH from any network vpn-sg
-resource "azurerm_network_security_rule" "ssh" {
+resource "azurerm_network_security_rule" "vpn_ssh" {
   name                        = "PermitSSHInbound"
   resource_group_name         = "${azurerm_resource_group.dx01.name}"
   network_security_group_name = "${azurerm_network_security_group.vpn-sg.name}"
@@ -124,7 +124,7 @@ resource "azurerm_network_security_rule" "ssh" {
 }
 
 # NOTE: this allows VPN from Internet vpn-sg
-resource "azurerm_network_security_rule" "openvpn" {
+resource "azurerm_network_security_rule" "openvpn_Port" {
   name                        = "PermitOpenVPNInbound"
   resource_group_name         = "${azurerm_resource_group.dx01.name}"
   network_security_group_name = "${azurerm_network_security_group.vpn-sg.name}"
@@ -139,16 +139,31 @@ resource "azurerm_network_security_rule" "openvpn" {
 }
 
 # NOTE: this allows HTTPS access to client ovpn file from Internet vpn-sg
-resource "azurerm_network_security_rule" "HTTPS" {
+resource "azurerm_network_security_rule" "vpn_HTTPS" {
   name                        = "HTTPS"
   resource_group_name         = "${azurerm_resource_group.dx01.name}"
   network_security_group_name = "${azurerm_network_security_group.vpn-sg.name}"
   priority                    = 1000
   direction                   = "Inbound"
   access                      = "Allow"
-  protocol                    = "Udp"
+  protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_range      = "443"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+}
+
+# NOTE: this allows HTTPS access to client ovpn file from Internet vpn-sg
+resource "azurerm_network_security_rule" "vpn_HTTP" {
+  name                        = "HTTP"
+  resource_group_name         = "${azurerm_resource_group.dx01.name}"
+  network_security_group_name = "${azurerm_network_security_group.vpn-sg.name}"
+  priority                    = 1010
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "80"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
 }
