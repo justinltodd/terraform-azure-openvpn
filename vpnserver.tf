@@ -1,3 +1,41 @@
+# Template for shell script ./scripts/server.conf
+data "template_file" "vpn_server_configuration_file" {
+  template = "${file("${var.server_conf}")}"
+
+  vars = {
+    PORT             = "${var.PORT}"
+    PROTOCOL         = "${var.PROTOCOL}"
+    VPN_IP           = "${var.VPNSERVER_IP}"
+    VPNSERVER_Subnet = "${var.VPNSERVER_Subnet}"
+    DNS1             = "${var.DNS1}"
+    DNS2             = "${var.DNS2}"
+    LOCATION         = "${var.location}"
+  }
+}
+
+# Template for shell script ./scripts/client-common.txt
+data "template_file" "vpn_client_template_file" {
+  template = "${file("${var.client_template}")}"
+
+  vars = {
+    PORT             = "${var.PORT}"
+    PROTOCOL         = "${var.PROTOCOL}"
+    VPNSERVER_Subnet = "${var.VPNSERVER_Subnet}"
+    HOST             = "${var.vpnserver_hostname}"
+    LOCATION         = "${var.location}"
+  }
+}
+
+# Template for shell script ./scripts/lighttpd.conf
+data "template_file" "lighttpd_template_file" {
+  template = "${file("${var.lighttpd_template}")}"
+
+  vars = {
+    HOST     = "${var.vpnserver_hostname}"
+    LOCATION = "${var.location}"
+  }
+}
+
 # Generate random text for a unique storage account name
 resource "random_id" "vpn_randomId" {
   keepers = {
@@ -62,7 +100,7 @@ resource "azurerm_virtual_machine" "openvpn" {
     type        = "ssh"
     host        = "${azurerm_public_ip.PublicIP.ip_address}"
     user        = "${var.vpnserver_username}"
-    private_key = "${file(var.private_key_file)}"
+    private_key = "${file(var.ssh_private_key_file)}"
   }
 
   # Install Openvpn and other required binarys
@@ -243,57 +281,6 @@ resource "azurerm_virtual_machine" "openvpn" {
     command = "rm -f ${var.client_config_path}/${var.client_config_name}.ovpn"
     when    = "destroy"
   }
-
-  # Template for shell script ./scripts/openvpn.sh
-  data "template_file" "deployment_shell_script" {
-    template = "${file("${var.build_vpnserver}")}"
-
-    vars {
-      cert_details       = "${file(var.cert_details)}"
-      client_config_name = "${var.client_config_name}"
-    }
-  }
-
-  # Template for shell script ./scripts/server.conf
-  data "template_file" "vpn_server_configuration_file" {
-    template = "${file("${var.server_conf}")}"
-
-    vars {
-      PORT             = "${var.PORT}"
-      PROTOCOL         = "${var.PROTOCOL}"
-      VPN_IP           = "${var.VPN_IP}"
-      VPNSERVER_Subnet = "${var.VPNSERVER_Subnet}"
-      DNS1             = "${var.DNS1}"
-      DNS2             = "${var.DNS2}"
-      LOCATION         = "${var.location}"
-    }
-  }
-
-  # Template for shell script ./scripts/client-common.txt
-  data "template_file" "vpn_client_template_file" {
-    template = "${file("${var.client_template}")}"
-
-    vars {
-      PORT             = "${var.PORT}"
-      PROTOCOL         = "${var.PROTOCOL}"
-      VPN_IP           = "${var.VPN_IP}"
-      VPNSERVER_Subnet = "${var.VPNSERVER_Subnet}"
-      DNS1             = "${var.DNS1}"
-      DNS2             = "${var.DNS2}"
-      HOST             = "${var.vpnserver_hostname}"
-      LOCATION         = "${var.location}"
-    }
-  }
-
-  # Template for shell script ./scripts/lighttpd.conf
-  data "template_file" "lighttpd_template_file" {
-    template = "${file("${var.lighttpd_template}")}"
-
-    vars {
-      HOST     = "${var.vpnserver_hostname}"
-      LOCATION = "${var.location}"
-    }
-  }
 }
 
 # VPNSERVER PublicIP
@@ -301,7 +288,7 @@ resource "azurerm_public_ip" "PublicIP" {
   name                = "${var.vpnserver_hostname}-public"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
   location            = "${var.location}"
-  allocation_method   = "static"
+  allocation_method   = "Static"
   domain_name_label   = "${var.vpnserver_hostname}" #//adds dns using hostname.centralus.cloudapp.azure.com
 
   tags = {
