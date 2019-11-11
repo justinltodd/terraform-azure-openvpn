@@ -50,7 +50,7 @@ resource "random_id" "vpn_randomId" {
 resource "azurerm_storage_account" "dx_vpn_storage" {
   name                     = "diag${random_id.vpn_randomId.hex}"
   resource_group_name      = "${azurerm_resource_group.dx01.name}"
-  location                 = "${var.location}"
+  location                 = "${azurerm_resource_group.dx01.location}"
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
@@ -62,7 +62,7 @@ resource "azurerm_storage_account" "dx_vpn_storage" {
 # Create openvpn virtual machine
 resource "azurerm_virtual_machine" "openvpn" {
   name                  = "${var.vpnserver_hostname}"
-  location              = "${var.location}"
+  location              = "${azurerm_resource_group.dx01.location}"
   resource_group_name   = "${azurerm_resource_group.dx01.name}"
   network_interface_ids = ["${azurerm_network_interface.vpnserver_nic.id}"]
   vm_size               = "${var.vpnserver_vmsize}"
@@ -287,7 +287,7 @@ resource "azurerm_virtual_machine" "openvpn" {
 resource "azurerm_public_ip" "PublicIP" {
   name                = "${var.vpnserver_hostname}-public"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
-  location            = "${var.location}"
+  location            = "${azurerm_resource_group.dx01.location}"
   allocation_method   = "Static"
   domain_name_label   = "${var.vpnserver_hostname}" #//adds dns using hostname.centralus.cloudapp.azure.com
 
@@ -299,9 +299,10 @@ resource "azurerm_public_ip" "PublicIP" {
 # VPNSERVER Network Interface
 resource "azurerm_network_interface" "vpnserver_nic" {
   name                      = "${var.vpnserver_nic}"
-  location                  = "${var.location}"
+  location                  = "${azurerm_resource_group.dx01.location}"
   resource_group_name       = "${azurerm_resource_group.dx01.name}"
-  network_security_group_id = "${azurerm_network_security_group.vpn-sg.name}"
+  network_security_group_id = "${var.dx_vpn-sg}"
+
 
   ip_configuration {
     name                          = "${var.vpnserver_hostname}"
