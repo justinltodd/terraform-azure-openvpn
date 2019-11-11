@@ -12,7 +12,7 @@ resource "random_id" "dx_randomId" {
 resource "azurerm_storage_account" "dx_windows10_storage" {
   name                     = "diag${random_id.dx_randomId.hex}"
   resource_group_name      = "${azurerm_resource_group.dx01.name}"
-  location                 = "${var.location}"
+  location                 = "${azurerm_resource_group.dx01.location}"
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
@@ -24,7 +24,7 @@ resource "azurerm_storage_account" "dx_windows10_storage" {
 # Create virtual machine
 resource "azurerm_virtual_machine" "dx_windows" {
   name                  = "${var.windows_hostname}"
-  location              = "${var.location}"
+  location              = "${azurerm_resource_group.dx01.location}"
   resource_group_name   = "${azurerm_resource_group.dx01.name}"
   network_interface_ids = ["${azurerm_network_interface.dx-WindowsNic.id}"]
   vm_size               = "${var.dx_windows10_vmsize}"
@@ -74,7 +74,7 @@ resource "azurerm_virtual_machine" "dx_windows" {
 resource "azurerm_public_ip" "dx_PublicIP" {
   name                = "${var.windows_hostname}-public"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
-  location            = "${var.location}"
+  location            = "${azurerm_resource_group.dx01.location}"
   allocation_method   = "Dynamic"
 
   tags = {
@@ -85,7 +85,7 @@ resource "azurerm_public_ip" "dx_PublicIP" {
 # Create windows 10 desktop network interface
 resource "azurerm_network_interface" "dx-WindowsNic" {
   name                      = "${var.windows_hostname}Nic01"
-  location                  = "${var.location}"
+  location                  = "${azurerm_resource_group.dx01.location}"
   resource_group_name       = "${azurerm_resource_group.dx01.name}"
   network_security_group_id = "${azurerm_network_security_group.windows10-sg.id}"
 
