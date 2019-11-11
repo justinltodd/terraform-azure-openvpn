@@ -67,6 +67,12 @@ resource "azurerm_virtual_machine" "openvpn" {
   network_interface_ids = ["${azurerm_network_interface.vpnserver_nic.id}"]
   vm_size               = "${var.vpnserver_vmsize}"
 
+  # Uncomment this line to delete the OS disk automatically when deleting the VM
+  delete_os_disk_on_termination = true
+
+  # Uncomment this line to delete the data disks automatically when deleting the VM
+  delete_data_disks_on_termination = true
+
   storage_os_disk {
     name              = "${var.vpnserver_hostname}_os"
     caching           = "ReadWrite"
@@ -96,6 +102,16 @@ resource "azurerm_virtual_machine" "openvpn" {
     }
   }
 
+  boot_diagnostics {
+    enabled     = "true"
+    storage_uri = "${azurerm_storage_account.dx_vpn_storage.primary_blob_endpoint}"
+  }
+
+  tags = {
+    environment = "VPN Server: ${var.vpnserver_hostname}"
+  }
+
+
   connection {
     type        = "ssh"
     host        = "${azurerm_public_ip.PublicIP.ip_address}"
@@ -109,10 +125,11 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sleep 30",
       "sudo apt-get update",
       "sudo apt-get -y upgrade",
+      "sudo apt-get -y autoremove",
       "sudo apt-get -y install curl wget",
       "sudo add-apt-repository universe",
       "sudo add-apt-repository -y ppa:certbot/certbot",
-      "curl -s https://swupdate.openvpn.net/repos/repo-public.gpg | apt-key add -",
+      "sudo curl -s https://swupdate.openvpn.net/repos/repo-public.gpg | apt-key add -",
       "echo 'deb http://build.openvpn.net/debian/openvpn/stable bionic main' > /etc/apt/sources.list.d/openvpn-aptrepo.list",
       "sudo apt-get update",
       "sudo apt-get -y install gcc software-properties-common",
@@ -122,9 +139,17 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo apt-get -y install ca-certificates",
       "sudo apt-get -y install openssl",
       "sudo apt-get -y install certbot",
-      "systemctl enable openvpn@server.servic.service",
-      "systemctl restart openvpn@server.service",
+      "sudo systemctl enable openvpn@server.servic.service",
+      "sudo systemctl restart openvpn@server.service",
     ]
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   # Install Latest verions of EasyRSA and setup CA Authority
@@ -146,6 +171,14 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo chown nobody:nogroup /etc/openvpn/crl.pem",
       "sudo openvpn --genkey --secret /etc/openvpn/ta.key",
     ]
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   # Setup script for lighttpd client website
@@ -162,6 +195,14 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo /tmp/networking.sh",
       "sudo rm -rf /tmp/networking.sh",
     ]
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   ## Adjust permissions for openvpn to be available via HTTPS 
@@ -170,13 +211,21 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sleep 10",
       "sudo rm /var/www/html/*",
       "sudo mkdir /etc/openvpn/clients/",
-      "chown -R www-data:www-data /etc/openvpn/easy-rsa",
-      "chown -R www-data:www-data /etc/openvpn/clients/",
-      "chmod -R 755 /etc/openvpn/",
-      "chmod -R 777 /etc/openvpn/crl.pem",
-      "chmod g+s /etc/openvpn/clients/",
-      "chmod g+s /etc/openvpn/easy-rsa/",
+      "sudo chown -R www-data:www-data /etc/openvpn/easy-rsa",
+      "sudo chown -R www-data:www-data /etc/openvpn/clients/",
+      "sudo chmod -R 755 /etc/openvpn/",
+      "sudo chmod -R 777 /etc/openvpn/crl.pem",
+      "sudo chmod g+s /etc/openvpn/clients/",
+      "sudo chmod g+s /etc/openvpn/easy-rsa/",
     ]
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   # Setup script for lighttpd client website
@@ -197,7 +246,7 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sleep 10",
       "sudo service lighttpd stop",
       "sudo certbot certonly --standalone -n -d ${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com --email noreply@blueprism.com --agree-tos --redirect --hsts",
-      "cat /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/privkey.pem /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/cert.pem > /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/combined.pem",
+      "sudo cat /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/privkey.pem /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/cert.pem > /etc/letsencrypt/live/${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com/combined.pem",
       "sudo chown -R www-data:www-data /var/www/html/",
       "sudo mv /etc/lighttpd/lighttpd.conf /etc/lighttpd/lighttpd.conf.$$",
       "sudo echo '${var.vpnserver_username}:${var.vpnserver_password}' >> /etc/lighttpd/.lighttpdpassword",
@@ -206,6 +255,14 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo chmod g+x /etc/letsencrypt",
       "sudo chmod g+x /etc/letsencrypt/live",
     ]
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   # Provision dh.pem - Create the DH parameters file using the predefined ffdhe2048 group
@@ -240,6 +297,14 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo systemctl enable openvpn@server.service",
       "sudo systemctl enable lighttpd.service",
     ]
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   provisioner "remote-exec" {
@@ -252,7 +317,7 @@ resource "azurerm_virtual_machine" "openvpn" {
     connection {
       host        = "${azurerm_public_ip.PublicIP.ip_address}"
       type        = "ssh"
-      user        = "${var.vpnserver_username}"
+      user        = "root"
       private_key = "${file("${var.ssh_private_key_file}")}"
       timeout     = "5m"
     }
@@ -282,6 +347,7 @@ resource "azurerm_virtual_machine" "openvpn" {
     when    = "destroy"
   }
 }
+
 
 # VPNSERVER PublicIP
 resource "azurerm_public_ip" "PublicIP" {
