@@ -3,6 +3,12 @@
 # Define these secrets as environment variables
 # ---------------------------------------------------------------------------------------------------------------------
 
+# PREFIX FOR RESOURCE NAMING SCHEME -----------------------------------------------------------------------------------
+variable "prefix" {
+  description = "The prefix that will be attached to all resources deployed"
+  default     = "dx"
+}
+
 # CREDENTIALS ---------------------------------------------------------------------------------------------------------
 variable "subscription_id" {
   description = "Subscription ID"
@@ -202,7 +208,7 @@ variable "DNS2" {
 # SECURITY GROUPS VARIABLES -------------------------------------------------------------------------------------------
 variable "dx_vpn-sg" {
   description = "Security group for OpenVPN Server"
-  default     = "dx_vpn_SecurityGroup"
+  default     = "dx_vpn-SecurityGroup"
 }
 
 variable "dx_windows10-sg" {
@@ -251,8 +257,3 @@ variable "destination_address_prefix" {
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
 
-# PREFIX FOR RESOURCE NAMING SCHEME -----------------------------------------------------------------------------------
-variable "prefix" {
-  description = "The prefix that will be attached to all resources deployed"
-  default     = "dx"
-}
