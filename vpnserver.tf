@@ -301,7 +301,7 @@ resource "azurerm_network_interface" "vpnserver_nic" {
   name                      = "${var.vpnserver_nic}"
   location                  = "${azurerm_resource_group.dx01.location}"
   resource_group_name       = "${azurerm_resource_group.dx01.name}"
-  network_security_group_id = "${var.dx_vpn-sg}"
+  network_security_group_id = "${azurerm_network_security_group.vpn-sg.id}"
 
 
   ip_configuration {
