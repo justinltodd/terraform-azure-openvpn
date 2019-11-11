@@ -6,7 +6,7 @@
 resource "azurerm_virtual_network" "vnet" {
   name                = "${var.virtual_network}"
   address_space       = ["10.0.0.0/8"]
-  location            = "${var.location}"
+  location            = "${azurerm_resource_group.dx01.location}"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
 }
 
@@ -36,15 +36,15 @@ resource "azurerm_subnet" "frontend" {
 
 # DX VPN Server  Network Security Group
 resource "azurerm_network_security_group" "vpn-sg" {
-  name                = "${var.vpn-sg}"
-  location            = "${var.location}"
+  name                = "${var.dx_vpn-sg}"
+  location            = "${azurerm_resource_group.dx01.location}"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
 }
 
 # DX Windows 10 Desktop Network Security Group
 resource "azurerm_network_security_group" "windows10-sg" {
   name                = "${var.dx_windows10-sg}"
-  location            = "${var.location}"
+  location            = "${azurerm_resource_group.dx01.location}"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
 }
 
@@ -108,7 +108,7 @@ resource "azurerm_network_security_rule" "windows10_HTTPS" {
   destination_address_prefix  = "*"
 }
 
-# NOTE: this allows SSH from any network vpn-sg
+# NOTE: this allows SSH from any network dx_vpn-sg
 resource "azurerm_network_security_rule" "vpn_ssh" {
   name                        = "PermitSSHInbound"
   resource_group_name         = "${azurerm_resource_group.dx01.name}"
