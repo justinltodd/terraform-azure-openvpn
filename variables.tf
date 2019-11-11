@@ -47,7 +47,7 @@ variable "location" {
 # USERNAMES VPN/Windows  ----------------------------------------------------------------------------------------------
 variable "vpnserver_username" {
   description = "The username configured for linux"
-  default     = "admin"
+  default     = "dxadmin"
 }
 
 variable "vpnserver_password" {
@@ -75,7 +75,7 @@ variable "vpnserver_hostname" {
 
 variable "windows_hostname" {
   description = "The hostname of the new VM  Windows 10 desktop to be configured"
-  default     = "bluedx-demo01"
+  default     = "bluedx01"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
