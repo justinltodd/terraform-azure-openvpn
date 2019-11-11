@@ -61,9 +61,9 @@ resource "azurerm_virtual_machine" "dx_windows" {
   }
 
   tags = {
-    environment = "${var.windows_hostname} dx Demo"
-    CreatedBy   = "JTODD",
-    Purpose     = "Windows Automation Client"
+    environment = "Windows 10 Desktop: ${var.windows_hostname}"
+    CreatedBy   = "BP Terraform",
+    Purpose     = "Windows 10 Sandbox"
   }
 
 
@@ -72,7 +72,7 @@ resource "azurerm_virtual_machine" "dx_windows" {
 
 # Create windows 10 desktop IPs
 resource "azurerm_public_ip" "dx_PublicIP" {
-  name                = "${var.windows_hostname}-public"
+  name                = "${var.windows_hostname}-PublicIP"
   resource_group_name = "${azurerm_resource_group.dx01.name}"
   location            = "${azurerm_resource_group.dx01.location}"
   allocation_method   = "Dynamic"
