@@ -1,35 +1,5 @@
-1. Pull up a terminal or SSH into the target server.
-
-1. Logon as root
-
 	````
-	sudo -i
-	````
-
-1. Download the installer script.
-
-	````
-	wget https://bitbucket.org/blueprism-tsa/dynamic_environment/src/master/scripts/openvpn.sh
-	````
-
-1. Make the script executable
-
-	````
-	chmod +x openvpn.sh
-	````
-
-1. Run the script.
-
-	````
-	./openvpn.sh [options]
-	````
-
-	Example:
-
-	````
-	./openvpn.sh --adminpassword=mypassword --host=myvpn.example.com
-	````
-
+Adjust Templates and variables
 
 	There are number of options the script will accept
 
