@@ -174,6 +174,20 @@ resource "azurerm_virtual_machine" "openvpn" {
     }
   }
 
+  # Render the vars file for easy-rsa CA creation
+  provisioner "file" {
+    source      = "./scripts/vars"
+    destination = "/tmp/vars"
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
+  }
+
   # Install Latest verions of EasyRSA and setup CA Authority
   provisioner "remote-exec" {
     inline = [
@@ -185,6 +199,7 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo rm -rf /tmp/EasyRSA.tgz",
       "cd /etc/openvpn/easy-rsa/",
       "sudo ./easyrsa init-pki",
+      "sudo mv /tmp/vars /etc/openvpn/easy-rsa",
       "sudo touch /etc/openvpn/easy-rsa/pki/.rnd",
       "sudo ./easyrsa --batch build-ca nopass",
       "EASYRSA_CERT_EXPIRE=3650 sudo ./easyrsa build-server-full ${var.vpnserver_hostname} nopass",
