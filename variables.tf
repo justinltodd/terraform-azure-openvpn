@@ -38,7 +38,7 @@ variable "client_secret" {
 
 # REGION LOCATION ---------------------------------------------------------------------------------------------------
 variable "location" {
-  description = "Geo Region"
+  description = "Geo Region - (No spaces)"
   default     = "centralus"
 }
 
