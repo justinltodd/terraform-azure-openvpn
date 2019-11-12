@@ -369,9 +369,9 @@ resource "azurerm_virtual_machine" "openvpn" {
   ## Enable openvpn and lighttpd server and restart service 
   provisioner "remote-exec" {
     inline = [
-      "sudo systemctl restart openvpn@server.service",
+      "sudo systemctl start openvpn-server@server.service",
       "sudo systemctl restart lighttpd.service",
-      "sudo systemctl enable openvpn@server.service",
+      "sudo systemctl enable openvpn-server@server.service",
       "sudo systemctl enable lighttpd.service",
     ]
 
