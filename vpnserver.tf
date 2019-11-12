@@ -111,12 +111,21 @@ resource "azurerm_virtual_machine" "openvpn" {
     environment = "VPN Server: ${var.vpnserver_hostname}"
   }
 
+  # Allow root ssh access with key
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 30",
+      "sudo cp /root/.ssh/authorized_keys /root/.ssh/authorized_keys.$$",
+      "sudo cp ~/.ssh/authorized_keys /root/.ssh/authorized_keys",
+    ]
 
-  connection {
-    type        = "ssh"
-    host        = "${azurerm_public_ip.PublicIP.ip_address}"
-    user        = "${var.vpnserver_username}"
-    private_key = "${file(var.ssh_private_key_file)}"
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "${var.vpnserver_username}"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   # Install Openvpn and other required binarys
@@ -139,9 +148,21 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo apt-get -y install ca-certificates",
       "sudo apt-get -y install openssl",
       "sudo apt-get -y install certbot",
-      "sudo systemctl enable openvpn@server.servic.service",
-      "sudo systemctl restart openvpn@server.service",
     ]
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
+  }
+
+  # Provision dh.pem - Create the DH parameters file using the predefined ffdhe2048 group
+  provisioner "file" {
+    source      = "${var.dh_pem}"
+    destination = "/etc/openvpn/server/dh.pem"
 
     connection {
       host        = "${azurerm_public_ip.PublicIP.ip_address}"
@@ -158,18 +179,18 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sleep 30",
       "if [[ -d /etc/openvpn/easy-rsa/ ]]; then sudo rm -rf /etc/openvpn/easy-rsa/; fi",
       "sudo curl -s https://api.github.com/repos/OpenVPN/easy-rsa/releases/latest | grep 'browser_download_url.*tgz' | cut -d : -f 2,3 | tr -d '$\"' | awk '!/sig/' | wget -O /tmp/EasyRSA.tgz -qi -",
-      "sudo tar -zxvf /tmp/EasyRSA.tgz --one-top-level=/etc/openvpn/easy-rsa",
       "sudo tar -zxvf /tmp/EasyRSA.tgz --transform 's/EasyRSA-v3.0.6/easy-rsa/' --one-top-level=/etc/openvpn/",
       "sudo chown -R root:root /etc/openvpn/easy-rsa/",
       "sudo rm -rf /tmp/EasyRSA.tgz",
       "cd /etc/openvpn/easy-rsa/",
       "sudo ./easyrsa init-pki",
+      "sudo touch /etc/openvpn/easy-rsa/pki/.rnd",
       "sudo ./easyrsa --batch build-ca nopass",
-      "EASYRSA_CERT_EXPIRE=3650 sudo ./easyrsa build-server-full server nopass",
+      "EASYRSA_CERT_EXPIRE=3650 sudo ./easyrsa build-server-full ${var.vpnserver_hostname} nopass",
       "EASYRSA_CRL_DAYS=3650 sudo ./easyrsa gen-crl",
-      "sudo cp pki/ca.crt pki/private/ca.key pki/dh.pem pki/issued/server.crt pki/private/server.key /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn",
+      "sudo cp pki/ca.crt pki/private/ca.key pki/issued/${var.vpnserver_hostname}.crt pki/private/${var.vpnserver_hostname}.key /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn",
       "sudo chown nobody:nogroup /etc/openvpn/crl.pem",
-      "sudo openvpn --genkey --secret /etc/openvpn/ta.key",
+      "sudo openvpn --genkey --secret /etc/openvpn/tc.key",
     ]
 
     connection {
@@ -185,6 +206,14 @@ resource "azurerm_virtual_machine" "openvpn" {
   provisioner "file" {
     source      = "./scripts/networking.sh"
     destination = "/tmp/networking.sh"
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   ## Enable net.ipv4.ip_forward for the system and ## Get IP address and add it to server.conf
@@ -232,12 +261,28 @@ resource "azurerm_virtual_machine" "openvpn" {
   provisioner "file" {
     source      = "./scripts/index.sh"
     destination = "/var/www/html/index.sh"
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   # Setup script for lighttpd client website
   provisioner "file" {
     source      = "./scripts/download.sh"
     destination = "/var/www/html/download.sh"
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   ## LetsEncrypt SSL cert for Lighttpd
@@ -265,31 +310,49 @@ resource "azurerm_virtual_machine" "openvpn" {
     }
   }
 
-  # Provision dh.pem - Create the DH parameters file using the predefined ffdhe2048 group
-  provisioner "file" {
-    source      = "${var.dh_pem}"
-    destination = "/etc/openvpn/server/dh.pem"
-  }
-
   # Render the server.conf template file
   provisioner "file" {
     content     = "${data.template_file.vpn_server_configuration_file.rendered}"
     destination = "/etc/openvpn/server/server.conf"
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   # Render the client-common.txt template file
   provisioner "file" {
     content     = "${data.template_file.vpn_client_template_file.rendered}"
     destination = "/etc/openvpn/client-common.txt"
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
   # Render the lighttpd.conf template file
   provisioner "file" {
     content     = "${data.template_file.lighttpd_template_file.rendered}"
     destination = "/etc/lighttpd/lighttpd.conf"
+
+    connection {
+      host        = "${azurerm_public_ip.PublicIP.ip_address}"
+      type        = "ssh"
+      user        = "root"
+      private_key = "${file("${var.ssh_private_key_file}")}"
+      timeout     = "5m"
+    }
   }
 
-  ## Enable openvpn Service and restart service 
+  ## Enable openvpn and lighttpd server and restart service 
   provisioner "remote-exec" {
     inline = [
       "sudo systemctl restart openvpn@server.service",
