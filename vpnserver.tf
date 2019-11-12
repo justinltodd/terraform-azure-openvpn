@@ -10,6 +10,7 @@ data "template_file" "vpn_server_configuration_file" {
     DNS1             = "${var.DNS1}"
     DNS2             = "${var.DNS2}"
     LOCATION         = "${var.location}"
+    HOST             = "${var.vpnserver_hostname}"
   }
 }
 
