@@ -1,3 +1,5 @@
+## NOT IN USE YET ##
+
 variable "rules" {
   description = "Standard set of predefined rules"
   type        = "map"
