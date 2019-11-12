@@ -311,8 +311,6 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo chown -R www-data:www-data /var/www/html/",
       "sudo mv /etc/lighttpd/lighttpd.conf /etc/lighttpd/lighttpd.conf.$$",
       "sudo echo '${var.vpnserver_username}:${var.vpnserver_password}' >> /etc/lighttpd/.lighttpdpassword",
-      "sudo chown :lighttpd /etc/letsencrypt",
-      "sudo chown :lighttpd /etc/letsencrypt/live",
       "sudo chmod g+x /etc/letsencrypt",
       "sudo chmod g+x /etc/letsencrypt/live",
     ]
