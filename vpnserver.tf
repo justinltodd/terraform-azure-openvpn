@@ -194,7 +194,7 @@ resource "azurerm_virtual_machine" "openvpn" {
   provisioner "remote-exec" {
     inline = [
       "sleep 30",
-      "sudo mv /etc/openvpn/easy-rsa/ /etc/openvpn/easy-rsa.$$.old", #//If old easy-rsa exists then it will move to backup dir. 
+      "sudo mv /etc/openvpn/easy-rsa/ /etc/openvpn/easy-rsa.$$.old 2> /dev/null", #//If old easy-rsa exists then it will move to backup dir. 
       "sudo curl -s https://api.github.com/repos/OpenVPN/easy-rsa/releases/latest | grep 'browser_download_url.*tgz' | cut -d : -f 2,3 | tr -d '$\"' | awk '!/sig/' | wget -O /tmp/EasyRSA.tgz -qi -",
       "sudo tar -zxvf /tmp/EasyRSA.tgz --transform 's/EasyRSA-v3.0.6/easy-rsa/' --one-top-level=/etc/openvpn/",
       "sudo chown -R root:root /etc/openvpn/easy-rsa/",
