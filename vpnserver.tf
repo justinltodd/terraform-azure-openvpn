@@ -432,7 +432,7 @@ resource "azurerm_network_interface" "vpnserver_nic" {
   }
 
   tags = {
-    environment = "Windows 10 Desktop: ${var.vpnserver_hostname}"
+    environment = "VPN Server Hostname: ${var.vpnserver_hostname}"
   }
 }
 
