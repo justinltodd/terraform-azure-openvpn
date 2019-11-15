@@ -165,7 +165,7 @@ resource "azurerm_virtual_machine" "openvpn" {
   # Provision dh.pem - Create the DH parameters file using the predefined ffdhe2048 group
   provisioner "file" {
     source      = "${var.dh_pem}"
-    destination = "/etc/openvpn/server/dh.pem"
+    destination = "/etc/openvpn/server/dh4096.pem"
 
     connection {
       host        = "${azurerm_public_ip.PublicIP.ip_address}"
@@ -199,9 +199,9 @@ resource "azurerm_virtual_machine" "openvpn" {
       "sudo tar -zxvf /tmp/EasyRSA.tgz --transform 's/EasyRSA-v3.0.6/easy-rsa/' --one-top-level=/etc/openvpn/",
       "sudo chown -R root:root /etc/openvpn/easy-rsa/",
       "sudo rm -rf /tmp/EasyRSA.tgz",
+      "sudo mv /tmp/vars /etc/openvpn/easy-rsa",
       "cd /etc/openvpn/easy-rsa/",
       "sudo ./easyrsa init-pki",
-      "sudo mv /tmp/vars /etc/openvpn/easy-rsa",
       "sudo touch /etc/openvpn/easy-rsa/pki/.rnd",
       "sudo ./easyrsa --batch --req-cn=${var.vpnserver_hostname}-RootCA build-ca nopass",
       "sudo ./easyrsa build-server-full ${var.vpnserver_hostname} nopass",
