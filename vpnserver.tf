@@ -208,7 +208,7 @@ resource "azurerm_virtual_machine" "openvpn" {
       "EASYRSA_CRL_DAYS=3650 sudo ./easyrsa gen-crl",
       "sudo cp pki/ca.crt pki/private/ca.key pki/issued/${var.vpnserver_hostname}.crt pki/private/${var.vpnserver_hostname}.key /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn/server/",
       "sudo chown nobody:nogroup /etc/openvpn/server/crl.pem",
-      "sudo openvpn --genkey --secret /etc/openvpn/server/tc.key",
+      "sudo openvpn --genkey --secret /etc/openvpn/server/ta.key",
     ]
 
     connection {
