@@ -91,11 +91,6 @@ variable "vpnserver_nic" {
   default     = "ifconfig01"
 }
 
-variable "build_vpnserver" {
-  description = "openvpn build template script"
-  default     = "./scripts/openvpn.sh"
-}
-
 variable "lighttpd_template" {
   description = "lighttpd.conf build template"
   default     = "./scripts/lighttpd.conf"
