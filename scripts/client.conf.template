@@ -1,4 +1,5 @@
-# client-common.txt is created so we have a template to add further users later
+# OpenVPN 2.4.8 client.conf Template File
+# OpenSSL 1.1.1  11 Sep 2018, LZO 2.08
 client
 dev tun
 proto ${PROTOCOL}4
