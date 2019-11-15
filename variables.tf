@@ -93,22 +93,22 @@ variable "vpnserver_nic" {
 
 variable "lighttpd_template" {
   description = "lighttpd.conf build template"
-  default     = "./scripts/lighttpd.conf"
+  default     = "./scripts/lighttpd.conf.template"
 }
 
 variable "dh_pem" {
-  description = "DH parameters file using the predefined ffdhe2048 group"
-  default     = "./scripts/dh.pem"
+  description = "DH parameters file using the predefined ffdhe4096 group"
+  default     = "./scripts/dh4096.pem"
 }
 
 variable "server_conf" {
   description = "VPN Server Configuration template file"
-  default     = "./scripts/server.conf"
+  default     = "./scripts/server.conf.template"
 }
 
 variable "client_template" {
   description = "VPN client ovpn template file"
-  default     = "./scripts/client-common.txt"
+  default     = "./scripts/client.conf.template"
 }
 
 variable "ssh_public_key_file" {
