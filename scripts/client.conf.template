@@ -3,16 +3,32 @@
 client
 dev tun
 proto ${PROTOCOL}4
+
+# Host name and port for the server (default port is 1194)
+# note: replace with the correct values your server set up
 remote ${HOST}.${LOCATION}.cloudapp.azure.com ${PORT}
+
 resolv-retry infinite
 nobind
 persist-key
 persist-tun
+
+# Use compression - lzo, lz4 or blank
 compress lz4
+
+# https://openvpn.net/index.php/open-source/documentation/howto.html#mitm
 remote-cert-tls server
+
+# Specify same cipher same as vpnserver
 cipher AES-256-CBC
-auth SHA512
 tls-version-min 1.2
+# From Applied Crypto Hardening
 tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384
-verb 3
+auth SHA512
+
+# Since we specified the tls-auth for server, we need it for the client
+# note: 0 = server, 1 = client
 key-direction 1
+
+# Verbosity Level
+verb 3
