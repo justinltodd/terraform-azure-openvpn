@@ -1,16 +1,16 @@
 # client-common.txt is created so we have a template to add further users later
 client
 dev tun
-proto ${PROTOCOL}
-sndbuf 0
-rcvbuf 0
+proto ${PROTOCOL}4
 remote ${HOST}.${LOCATION}.cloudapp.azure.com ${PORT}
 resolv-retry infinite
 nobind
 persist-key
 persist-tun
+comp-lzo
 remote-cert-tls server
 cipher AES-256-CBC
-setenv opt block-outside-dns
-key-direction 1
+auth SHA512
+tls-version-min 1.2
+tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384
 verb 3
