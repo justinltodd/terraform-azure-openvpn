@@ -3,14 +3,17 @@ data "template_file" "vpn_server_configuration_file" {
   template = "${file("${var.server_conf}")}"
 
   vars = {
-    PORT             = "${var.PORT}"
-    PROTOCOL         = "${var.PROTOCOL}"
-    VPN_IP           = "${var.VPNSERVER_IP}"
-    VPNSERVER_Subnet = "${var.VPNSERVER_Subnet}"
-    DNS1             = "${var.DNS1}"
-    DNS2             = "${var.DNS2}"
-    LOCATION         = "${var.location}"
-    HOST             = "${var.vpnserver_hostname}"
+    VPN_PORT             = "${var.VPN_PORT}"
+    VPN_PROTOCOL         = "${var.VPN_PROTOCOL}"
+    VPN_FRONTEND_SUBNET  = "${var.VPN_FRONTEND_SUBNET}"
+    VPN_FRONTEND_NETMASK = "${var.VPN_FRONTEND_NETMASK}"
+    VPN_DNS1             = "${var.VPN_DNS1}"
+    VPN_DNS2             = "${var.VPN_DNS2}"
+    LOCATION             = "${var.location}"
+    VPN_HOST             = "${var.vpnserver_hostname}"
+    VPNSERVER_PRIVATE_IP = "${var.VPNSERVER_PRIVATE_IP}"
+    VPN_DOMAIN           = "${var.VPN_DOMAIN}"
+    VPN_COMPRESSION      = "${var.VPN_COMPRESSION}"
   }
 }
 
