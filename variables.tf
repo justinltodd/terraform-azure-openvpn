@@ -136,24 +136,44 @@ variable "cert_details" {
   default     = "../cert_details"
 }
 
-variable "PORT" {
+variable "VPN_PORT" {
   description = "VPN Server Port"
   default     = "1194"
 }
 
-variable "PROTOCOL" {
+variable "VPN_PROTOCOL" {
   description = "Protocol for VPN Server server.conf"
   default     = "udp"
 }
 
-variable "VPNSERVER_IP" {
+variable "VPN_FRONTEND_SUBNET" {
   description = "setting for server.conf"
   default     = "10.3.0.0"
 }
 
-variable "VPNSERVER_Subnet" {
+variable "VPN_FRONTEND_NETMASK" {
   description = "setting for server.conf"
   default     = "255.255.255.0"
+}
+
+variable "VPN_COMPRESSION" {
+  description = "VPN compression setting - lzo, lz4 or blank"
+  default     = "compress lz4"
+}
+
+variable "VPN_DNS1" {
+  description = "First Primary DNS"
+  default     = "9.9.9.9"
+}
+
+variable "VPN_DNS2" {
+  description = "Secondary DNS"
+  default     = "149.112.112.112"
+}
+
+variable "VPN_PRIVATE_IP" {
+  description = "VPN SERVER Static Private IP Address"
+  default     = "10.3.0.2"
 }
 
 # VM DX Windows Desktop 10  SETTINGS - SIZE,NIC,KEYS,ETC --------------------------------------------------------------------------
@@ -186,16 +206,6 @@ variable "vpn_frontend_subnet" {
 variable "mgmt_backend_subnet" {
   description = "The backend network"
   default     = "mgmt_backendSubnet"
-}
-
-variable "DNS1" {
-  description = "Quad9 First Primary DNS"
-  default     = "9.9.9.9"
-}
-
-variable "DNS2" {
-  description = "Quad9 Secondary DNS"
-  default     = "149.112.112.112"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
