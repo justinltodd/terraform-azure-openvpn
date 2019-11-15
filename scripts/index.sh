@@ -20,7 +20,7 @@ IP=$(wget -4qO- "http://whatismyip.akamai.com/")
 
 newclient () {
 	# Generates the custom client.ovpn
-	cp /etc/openvpn/client-common.txt /etc/openvpn/clients/$1.ovpn
+	cp /etc/openvpn/client.conf.template /etc/openvpn/clients/$1.ovpn
 	echo "<ca>" >> /etc/openvpn/clients/$1.ovpn
 	cat /etc/openvpn/easy-rsa/pki/ca.crt >> /etc/openvpn/clients/$1.ovpn
 	echo "</ca>" >> /etc/openvpn/clients/$1.ovpn
