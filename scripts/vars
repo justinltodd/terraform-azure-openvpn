@@ -51,12 +51,12 @@ set_var EASYRSA_DN      "org"
 # you may omit any specific field by typing the "." symbol (not valid for
 # email.)
 
-set_var EASYRSA_REQ_COUNTRY	"US"
+set_var EASYRSA_REQ_COUNTRY	    "US"
 set_var EASYRSA_REQ_PROVINCE	"New York"
-set_var EASYRSA_REQ_CITY	"New York"
-set_var EASYRSA_REQ_ORG	"BluePrism"
-set_var EASYRSA_REQ_EMAIL	"no-reply@blueprism.com"
-set_var EASYRSA_REQ_OU		"sandbox"
+set_var EASYRSA_REQ_CITY	    "New York"
+set_var EASYRSA_REQ_ORG	        "BluePrism"
+set_var EASYRSA_REQ_EMAIL	    "no-reply@blueprism.com"
+set_var EASYRSA_REQ_OU		    "BluePrism DX"
 
 # Choose a size in bits for your keypairs. The recommended value is 2048.  Using
 # 2048-bit keys is considered more than sufficient for many years into the
@@ -64,7 +64,7 @@ set_var EASYRSA_REQ_OU		"sandbox"
 # generation take much longer. Values up to 4096 should be accepted by most
 # software. Only used when the crypto alg is rsa (see below.)
 
-set_var EASYRSA_KEY_SIZE	2048
+set_var EASYRSA_KEY_SIZE	4096
 
 # The default crypto mode is rsa; ec can enable elliptic curve support.
 # Note that not all software supports ECC, so use care when enabling it.
