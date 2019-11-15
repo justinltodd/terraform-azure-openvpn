@@ -1,4 +1,4 @@
-# Template for shell script ./scripts/server.conf
+# Template for shell script ./scripts/server.conf.template
 data "template_file" "vpn_server_configuration_file" {
   template = "${file("${var.server_conf}")}"
 
@@ -14,7 +14,7 @@ data "template_file" "vpn_server_configuration_file" {
   }
 }
 
-# Template for shell script ./scripts/client-common.txt
+# Template for shell script ./scripts/client.conf.template
 data "template_file" "vpn_client_template_file" {
   template = "${file("${var.client_template}")}"
 
@@ -27,7 +27,7 @@ data "template_file" "vpn_client_template_file" {
   }
 }
 
-# Template for shell script ./scripts/lighttpd.conf
+# Template for shell script ./scripts/lighttpd.conf.template
 data "template_file" "lighttpd_template_file" {
   template = "${file("${var.lighttpd_template}")}"
 
@@ -220,7 +220,7 @@ resource "azurerm_virtual_machine" "openvpn" {
     }
   }
 
-  # Setup script for lighttpd client website
+  # Script for network adjustments such as IP forwarding.
   provisioner "file" {
     source      = "./scripts/networking.sh"
     destination = "/tmp/networking.sh"
@@ -326,7 +326,7 @@ resource "azurerm_virtual_machine" "openvpn" {
     }
   }
 
-  # Render the server.conf template file
+  # Render the server.conf.template template file -> server.conf
   provisioner "file" {
     content     = "${data.template_file.vpn_server_configuration_file.rendered}"
     destination = "/etc/openvpn/server/server.conf"
@@ -340,10 +340,10 @@ resource "azurerm_virtual_machine" "openvpn" {
     }
   }
 
-  # Render the client-common.txt template file
+  # Render the lient.conf.template template file
   provisioner "file" {
     content     = "${data.template_file.vpn_client_template_file.rendered}"
-    destination = "/etc/openvpn/client-common.txt"
+    destination = "/etc/openvpn/client.conf.template"
 
     connection {
       host        = "${azurerm_public_ip.PublicIP.ip_address}"
