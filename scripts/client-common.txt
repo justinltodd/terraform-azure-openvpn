@@ -14,3 +14,4 @@ auth SHA512
 tls-version-min 1.2
 tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384
 verb 3
+key-direction 1
