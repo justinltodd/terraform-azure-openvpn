@@ -8,7 +8,7 @@ resolv-retry infinite
 nobind
 persist-key
 persist-tun
-comp-lzo
+compress lz4
 remote-cert-tls server
 cipher AES-256-CBC
 auth SHA512
