@@ -176,6 +176,16 @@ variable "VPN_PRIVATE_IP" {
   default     = "10.3.0.2"
 }
 
+variable "DOMAIN" {
+  description = "VPN Server Domain"
+  type        = "map"
+  default = {
+    "VPNSERVER" = "bluedx-vpn01"
+    "LOCATION"  = "centralus"
+    "ZONE"      = "cloudapp.azure.com"
+  }
+}
+
 # VM DX Windows Desktop 10  SETTINGS - SIZE,NIC,KEYS,ETC --------------------------------------------------------------------------
 variable "dx_windows10_vmsize" {
   description = "Size of the VMs"
