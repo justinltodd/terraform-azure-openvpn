@@ -31,7 +31,7 @@ newclient () {
 	cat /etc/openvpn/easy-rsa/pki/private/$1.key >> /etc/openvpn/clients/$1.ovpn
 	echo "</key>" >> /etc/openvpn/clients/$1.ovpn
 	echo "<tls-auth>" >> /etc/openvpn/clients/$1.ovpn
-	cat /etc/openvpn/ta.key >> /etc/openvpn/clients/$1.ovpn
+	cat /etc/openvpn/server/ta.key >> /etc/openvpn/clients/$1.ovpn
 	echo "</tls-auth>" >> /etc/openvpn/clients/$1.ovpn
 }
 
