@@ -11,9 +11,10 @@ data "template_file" "vpn_server_configuration_file" {
     VPN_DNS2             = "${var.VPN_DNS2}"
     LOCATION             = "${var.location}"
     VPN_HOST             = "${var.vpnserver_hostname}"
-    VPNSERVER_PRIVATE_IP = "${var.VPNSERVER_PRIVATE_IP}"
-    VPN_DOMAIN           = "${var.VPN_DOMAIN}"
-    VPN_COMPRESSION      = "${var.VPN_COMPRESSION}"
+    VPN_PRIVATE_IP       = "${var.VPN_PRIVATE_IP}"
+    #VPN_DOMAIN           = "${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com"
+    VPN_DOMAIN      = "${var.DOMAIN["VPNSERVER"]}.${var.DOMAIN["LOCATION"]}.${var.DOMAIN["ZONE"]}"
+    VPN_COMPRESSION = "${var.VPN_COMPRESSION}"
   }
 }
 
@@ -22,11 +23,18 @@ data "template_file" "vpn_client_template_file" {
   template = "${file("${var.client_template}")}"
 
   vars = {
-    PORT             = "${var.PORT}"
-    PROTOCOL         = "${var.PROTOCOL}"
-    VPNSERVER_Subnet = "${var.VPNSERVER_Subnet}"
-    HOST             = "${var.vpnserver_hostname}"
-    LOCATION         = "${var.location}"
+    VPN_PORT             = "${var.VPN_PORT}"
+    VPN_PROTOCOL         = "${var.VPN_PROTOCOL}"
+    VPN_FRONTEND_SUBNET  = "${var.VPN_FRONTEND_SUBNET}"
+    VPN_FRONTEND_NETMASK = "${var.VPN_FRONTEND_NETMASK}"
+    VPN_DNS1             = "${var.VPN_DNS1}"
+    VPN_DNS2             = "${var.VPN_DNS2}"
+    LOCATION             = "${var.location}"
+    VPN_HOST             = "${var.vpnserver_hostname}"
+    VPN_PRIVATE_IP       = "${var.VPN_PRIVATE_IP}"
+    #VPN_DOMAIN           = "${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com"
+    VPN_DOMAIN      = "${var.DOMAIN["VPNSERVER"]}.${var.DOMAIN["LOCATION"]}.${var.DOMAIN["ZONE"]}"
+    VPN_COMPRESSION = "${var.VPN_COMPRESSION}"
   }
 }
 
@@ -430,7 +438,8 @@ resource "azurerm_network_interface" "vpnserver_nic" {
   ip_configuration {
     name                          = "${var.vpnserver_hostname}"
     subnet_id                     = "${azurerm_subnet.frontend.id}"
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "${var.VPN_PRIVATE_IP}"
     public_ip_address_id          = "${azurerm_public_ip.PublicIP.id}"
   }
 
