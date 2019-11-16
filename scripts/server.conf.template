@@ -29,22 +29,22 @@ crl-verify crl.pem
 
 # IP/hostname to bind to
 # Not needed if you only have one network interface, or if you don’t mind binding to all of them.
-#local ${PRIVATE_IP}
+#local ${VPN_PRIVATE_IP}
 
 ## default openvpn port 1194
-port ${PORT}
+port ${VPN_PORT}
 
 #PROTOCOL UDP/TCP  - Can Designate either Ipv4/Ipv6 ie udp4,udp6 
-proto ${PROTOCOL}4
+proto ${VPN_PROTOCOL}4
 
 # Tunnel
 dev tun
 
 # Certificates and encryption
 ca ca.crt
-cert ${HOST}.crt
+cert ${VPN_HOST}.crt
 # This file should be kept secret
-key ${HOST}.key
+key ${VPN_HOST}.key
 # DH Key Size 4096
 dh dh4096.pem
 # Shared secret among server and clients
@@ -58,14 +58,13 @@ tls-auth ta.key 0
 #to the older option "--comp-lzo yes").
 # Encrypt data channel with AES 256. Compress data with LZ4
 cipher AES-256-CBC
-compress lz4
-#compress ${VPN_COMPRESSION}  <--- Add Template Variable
+${VPN_COMPRESSION}
 
 #  Use a subnet rather than a point-to-point topology by configuring tun interface with local IP address and subnet.
 topology subnet
 
 # Tunnel configuration: Assign a subnet for VPN clients.
-server ${VPN_IP} ${VPNSERVER_Subnet}  #<--- Add Template Variable for these to match - ie ${VPN_FRONTEND_SUBNET) ${VPN_FRONTEND_NETMASK}
+server ${VPN_FRONTEND_SUBNET} ${VPN_FRONTEND_NETMASK}
 
 # Persist IP assignments to clients in case of server restart
 ifconfig-pool-persist ipp.txt
@@ -73,12 +72,12 @@ ifconfig-pool-persist ipp.txt
 # Force all traffic through VPN
 #push "redirect-gateway def1 bypass-dhcp" #Bypass-DHCP
 #push "redirect-gateway def1" #Don't Bypass-DHCP
-#push "remote-gateway ${GATEWAY_IP}”
+#push "remote-gateway GATEWAY_IP”
 
 # Push your DNS server IP
-#push "dhcp-option DNS ${DNS1}"
-#push "dhcp-option DNS ${DNS2}"
-#push "dhcp-option DOMAIN ${DOMAIN}” #<--- ADD Template Variable ie vpn.domain.com
+#push "dhcp-option DNS ${VPN_DNS1}"
+#push "dhcp-option DNS ${VPN_DNS2}"
+#push "dhcp-option DOMAIN ${VPN_DOMAIN}”
 
 # Set appropriate timeouts (check the man page)
 keepalive 10 120
