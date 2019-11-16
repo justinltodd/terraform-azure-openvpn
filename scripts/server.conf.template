@@ -91,9 +91,6 @@ group nogroup  #Debian Based group - Different with CentOS/RHEL
 persist-key
 persist-tun
 
-# chroot to this directory after initialization (less access to the system if compromised)
-chroot /etc/openvpn/chroot
-
 # Keep current status on this file.
 status /var/log/openvpn/openvpn-status.log
 log /var/log/openvpn/openvpn-server.log
