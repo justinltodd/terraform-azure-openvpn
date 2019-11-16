@@ -2,11 +2,11 @@
 # OpenSSL 1.1.1  11 Sep 2018, LZO 2.08
 client
 dev tun
-proto ${PROTOCOL}4
+proto ${VPN_PROTOCOL}4
 
 # Host name and port for the server (default port is 1194)
 # note: replace with the correct values your server set up
-remote ${HOST}.${LOCATION}.cloudapp.azure.com ${PORT}
+remote ${VPN_HOST}.${LOCATION}.cloudapp.azure.com ${VPN_PORT}
 
 resolv-retry infinite
 nobind
@@ -14,7 +14,7 @@ persist-key
 persist-tun
 
 # Use compression - lzo, lz4 or blank
-compress lz4
+${VPN_COMPRESSION}
 
 # https://openvpn.net/index.php/open-source/documentation/howto.html#mitm
 remote-cert-tls server
