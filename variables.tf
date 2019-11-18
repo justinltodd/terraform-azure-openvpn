@@ -52,22 +52,22 @@ variable "location" {
 # USERNAMES VPN/Windows  ----------------------------------------------------------------------------------------------
 variable "vpnserver_username" {
   description = "The username configured for linux"
-  default     = "dxadmin"
+  default     = "auzure"
 }
 
 variable "vpnserver_password" {
   description = "The password configured for linux"
-  default     = "Password1234"
+  default     = "Password"
 }
 
 variable "windows_username" {
   description = "The username for windows account"
-  default     = "dxadmin"
+  default     = "administrator"
 }
 
 variable "windows_password" {
   description = "The password for windows account"
-  default     = "Password1234"
+  default     = "Password"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -75,12 +75,12 @@ variable "windows_password" {
 # Static HOSTNAMES -----------------------------------------------------------------------------------------------------------
 variable "vpnserver_hostname" {
   description = "The hostname of the openvpn server LINUX VM to be configured"
-  default     = "dxunicorn01"
+  default     = "vpn01-server"
 }
 
 variable "windows_hostname" {
   description = "The hostname of the new VM  Windows 10 desktop to be configured"
-  default     = "bluedx01"
+  default     = "win01"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
