@@ -19,7 +19,7 @@ resource "azurerm_subnet" "vpn_hub_gateway_subnet" {
   name                 = "${var.prefix-vpn-hub}-gateway-subnet"
   resource_group_name  = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
   virtual_network_name = "${azurerm_virtual_network.vpn_hub_vnet.name}"
-  address_prefix       = "${var.VPN_HUB["SUBNET"]}/${var.VPN_HUB["CIDR"]}"
+  address_prefix       = "${var.VPN_HUB["SUBNET"]}/28"
 }
 
 # Subnet for vpnserver instance 10.0.0.15 - 10.0.0.31
