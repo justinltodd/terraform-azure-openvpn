@@ -103,7 +103,7 @@ variable "lighttpd_template" {
 
 variable "networking_template" {
   description = "networking script template"
-  default     = "./scripts/netowrking.sh.template"
+  default     = "./scripts/networking.sh.template"
 }
 
 variable "dh_pem" {
