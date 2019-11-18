@@ -9,18 +9,18 @@ provider "azurerm" {
 # DEPLOY A RESOURCE GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "azurerm_resource_group" "dx01" {
-  name     = "${var.prefix}01-resource"
+resource "azurerm_resource_group" "vpn_hub_vnet-rg" {
+  name     = "${var.prefix-vpn-hub}-rg"
   location = "${var.location}"
 }
 
-resource "azurerm_resource_group" "dx02" {
-  name     = "${var.prefix}02-resource"
+resource "azurerm_resource_group" "spoke01_vnet-rg" {
+  name     = "${var.prefix-spoke}01-rg"
   location = "${var.location}"
 }
 
-resource "azurerm_resource_group" "dx03" {
-  name     = "${var.prefix}03-resource"
+resource "azurerm_resource_group" "spoke02_vnet-rg" {
+  name     = "${var.prefix-spoke}02-rg"
   location = "${var.location}"
 }
 
