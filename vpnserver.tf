@@ -5,8 +5,9 @@ data "template_file" "vpn_server_configuration_file" {
   vars = {
     VPN_PORT           = "${var.VPN_PORT}"
     VPN_PROTOCOL       = "${var.VPN_PROTOCOL}"
-    VPN_CLIENT_SUBNET  = "${var.VPN_CLIENT_SUBNET}"
-    VPN_CLIENT_NETMASK = "${var.VPN_CLIENT_NETMASK}"
+    VPN_CLIENT_CIDR    = "${var.VPN_CLIENT["CIDR"]}"
+    VPN_CLIENT_SUBNET  = "${var.VPN_CLIENT["SUBNET"]}"
+    VPN_CLIENT_NETMASK = "${var.VPN_CLIENT["NETMASK"]}"
     VPN_HUB_SUBNET     = "${var.VPN_HUB["SUBNET"]}"
     VPN_HUB_NETMASK    = "${var.VPN_HUB["NETMASK"]}"
     VPN_DNS1           = "${var.VPN_DNS1}"
@@ -26,8 +27,9 @@ data "template_file" "vpn_client_template_file" {
   vars = {
     VPN_PORT           = "${var.VPN_PORT}"
     VPN_PROTOCOL       = "${var.VPN_PROTOCOL}"
-    VPN_CLIENT_SUBNET  = "${var.VPN_CLIENT_SUBNET}"
-    VPN_CLIENT_NETMASK = "${var.VPN_CLIENT_NETMASK}"
+    VPN_CLIENT_CIDR    = "${var.VPN_CLIENT["CIDR"]}"
+    VPN_CLIENT_SUBNET  = "${var.VPN_CLIENT["SUBNET"]}"
+    VPN_CLIENT_NETMASK = "${var.VPN_CLIENT["NETMASK"]}"
     VPN_HUB_SUBNET     = "${var.VPN_HUB["SUBNET"]}"
     VPN_HUB_NETMASK    = "${var.VPN_HUB["NETMASK"]}"
     VPN_DNS1           = "${var.VPN_DNS1}"
@@ -49,6 +51,16 @@ data "template_file" "lighttpd_template_file" {
     LOCATION = "${var.location}"
     ADMIN    = "${var.vpnserver_username}"
     PASS     = "${var.vpnserver_password}"
+  }
+}
+
+# Template for shell script ./scripts/lighttpd.conf.template
+data "template_file" "networking_template_file" {
+  template = "${file("${var.networking_template}")}"
+
+  vars = {
+    VPN_HUB_SUBNET  = "${var.VPN_CLIENT["SUBNET"]}"
+    VPN_HUB_NETMASK = "${var.VPN_CIDR["NETMASK"]}"
   }
 }
 
