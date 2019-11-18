@@ -1,21 +1,29 @@
 	````
-Adjust Templates and variables
+## Adjust Templates and variables
 
-	There are number of options the script will accept
+    There are number of varibale options the terraform will accept - located in variables.tf
+    Any script file that has ending of .template will have template variables that will be placing in the template files during rendering.
 
-	**adminpassword** -- This is the admin password for the website for managing clients. The default is **password**.
+    ${var.VPN_PORT}		-- The port to be used by OpenVPN. The default port is **1194**.
+    ${var.VPN_PROTOCOL}		-- The protocol to be used by OpenVPN. This accepts **udp** or tcp. The default is **udp**.
+    ${var.VPN_CLIENT["CIDR"]}	-- The Client Subnet CIDR ie 24
+    ${var.VPN_CLIENT["SUBNET"]}	-- The Client Network i.e 10.8.0.0 
+    ${var.VPN_CLIENT["NETMASK"]} - The Client Netmask i.e 255.255.255.0 
+    ${var.VPN_HUB["SUBNET"]}	-- The VPN Server Network i.e 10.1.0.0 
+    ${var.VPN_HUB["NETMASK"]}	-- The VPN Server Netmask i.e 255.255.255.0
+    ${var.VPN_CLIENT["CIDR"]}	-- The VPN Server Subnet CIDR ie 24
+    ${var.VPN_DNS1}		-- The first dns server assigned to the clients. 
+    ${var.VPN_DNS2}		-- The Secoon dns server assigned to the clients.
+    ${var.location}		-- The Region that the resource group will located default Centralus (no space)
+    ${var.vpnserver_hostname}"	-- The host name of the VPN server.
+    ${var.VPN_PRIVATE_IP}"	-- The Private IP of the VPN server. -Disable but can be enable by uncommenting
+    ${var.DOMAIN["VPNSERVER"]}	-- VPNSERVER Hostname in a map variable
+    ${var.DOMAIN["LOCATION"]}	-- VPNSERVER Geo Location in map variable
+    ${var.DOMAIN["ZONE"]}"	-- VPNSERVER DNS zone in map
+    ${var.VPN_COMPRESSION}"	-- VPN Server compression setting ie lzo lz4 or blank
+    -- Lots More in variables.tf -- 
 
-	**dns1** -- The first dns server assigned to the clients. The default is **8.8.8.8**.
-
-	**dns2** -- The first dns server assigned to the clients. The default is **8.8.4.4**.
-
-	**vpnport** -- The port to be used by OpenVPN. 1194 may be blocked by some firewalls, so this is customizable. The default port is **1194**.
-
-	**protocol** -- The protocol to be used by OpenVPN. This accepts **udp** or tcp. The default is **udp**.
-
-	**host** -- The host name of the server. The script attempts to detect the external IP of your server if the host is not specified. ***It is highly recommended that you use a host name if your sever is not using a static IP address***. You can get a free dynamic DNS account and use a dynamic DNS updater that keeps the DNS records for your server up to date in the event that your IPa address changes.
-
-1. Let the installer finish. This may take a few minutes, as the intaller generates a few keys to set up a certificate authority (CA) that is used to assign certificates to the clients.
+1. Let the Terraform apply finish. This may take a few minutes. 
 
 1. If the server you are installing this on is behind a firewall, be sure that you forward the external ports from the firewall to the ports on the server for the VPN. Optionally, if you want to be able to manage the VPN from outside the firewall, forward a port to 443 on the VPN Server.
 
