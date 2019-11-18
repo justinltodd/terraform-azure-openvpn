@@ -75,7 +75,7 @@ variable "windows_password" {
 # Static HOSTNAMES -----------------------------------------------------------------------------------------------------------
 variable "vpnserver_hostname" {
   description = "The hostname of the openvpn server LINUX VM to be configured"
-  default     = "bluedx-vpn01"
+  default     = "dxunicorn01"
 }
 
 variable "windows_hostname" {
