@@ -27,7 +27,7 @@ crl-verify crl.pem
 # Make the replay window slightly larger due to mobile clients
 #replay-window 256 60
 
-# IP/hostname to bind to
+# IP/hostname to bind to (OPTIONAL)
 # Not needed if you only have one network interface, or if you don’t mind binding to all of them.
 #local ${VPN_PRIVATE_IP}
 
@@ -64,20 +64,34 @@ ${VPN_COMPRESSION}
 topology subnet
 
 # Tunnel configuration: Assign a subnet for VPN clients.
-server ${VPN_FRONTEND_SUBNET} ${VPN_FRONTEND_NETMASK}
+#Virtual network created by the OpenVPN server.
+#Client would get a virtual private ip from this range(DHCP setting).
+#Server would take the first ip i.e.10.x.x.1
+server ${VPN_CLIENT_SUBNET} ${VPN_CLIENT_NETMASK}
 
 # Persist IP assignments to clients in case of server restart
 ifconfig-pool-persist ipp.txt
 
 # Force all traffic through VPN
-#push "redirect-gateway def1 bypass-dhcp" #Bypass-DHCP
-#push "redirect-gateway def1" #Don't Bypass-DHCP
+# Bypass-DHCP
+#push "redirect-gateway def1 bypass-dhcp"
+
+#Don't Bypass-DHCP
+push "redirect-gateway def1"
+
+# Push gateway
 #push "remote-gateway GATEWAY_IP”
 
 # Push your DNS server IP
-#push "dhcp-option DNS ${VPN_DNS1}"
-#push "dhcp-option DNS ${VPN_DNS2}"
-#push "dhcp-option DOMAIN ${VPN_DOMAIN}”
+push "dhcp-option DNS ${VPN_DNS1}"
+push "dhcp-option DNS ${VPN_DNS2}"
+push "dhcp-option DOMAIN ${VPN_DOMAIN}"
+
+#When used with --client or --pull, accept options pushed by server EXCEPT for routes, block-outside-dns and dhcp options like DNS servers
+#route-nopull
+
+#Advertise the ${VPN_HUB_SUBNET}/24 subnet to VPN clients as being accessible through the VPN.
+push "route ${VPN_HUB_SUBNET} ${VPN_HUB_NETMASK}
 
 # Set appropriate timeouts (check the man page)
 keepalive 10 120
