@@ -101,6 +101,11 @@ variable "lighttpd_template" {
   default     = "./scripts/lighttpd.conf.template"
 }
 
+variable "networking_template" {
+  description = "networking script template"
+  default     = "./scripts/netowrking.sh.template"
+}
+
 variable "dh_pem" {
   description = "DH parameters file using the predefined ffdhe4096 group"
   default     = "./scripts/dh4096.pem"
@@ -154,16 +159,14 @@ variable "VPN_PROTOCOL" {
 
 ## Virtual network created by the OpenVPN server. (REQUIRED)
 #Client would get a virtual private ip from this range(DHCP setting).
-variable "VPN_CLIENT_SUBNET" {
-  description = "setting for server.conf"
-  default     = "10.8.0.0"
-}
-
-## Netmask for VPN_CLIENT_SUBNET. (REQUIRED)
-#Client would get a virtual private ip from this range(DHCP setting).
-variable "VPN_CLIENT_NETMASK" {
-  description = "setting for server.conf"
-  default     = "255.255.255.0"
+variable "VPN_CLIENT" {
+  description = "SUBNET/NETMASK/CIDR for vpn_hub_gateway_subnet Advertise VPN Clients - Push Routing"
+  type        = "map"
+  default = {
+    "SUBNET"  = "10.8.0.0"
+    "CIDR"    = "24"
+    "NETMASK" = "255.255.255.0"
+  }
 }
 
 # VPN SERVER Compression Algorithm
