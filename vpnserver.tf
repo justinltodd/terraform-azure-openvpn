@@ -3,18 +3,19 @@ data "template_file" "vpn_server_configuration_file" {
   template = "${file("${var.server_conf}")}"
 
   vars = {
-    VPN_PORT             = "${var.VPN_PORT}"
-    VPN_PROTOCOL         = "${var.VPN_PROTOCOL}"
-    VPN_FRONTEND_SUBNET  = "${var.VPN_FRONTEND_SUBNET}"
-    VPN_FRONTEND_NETMASK = "${var.VPN_FRONTEND_NETMASK}"
-    VPN_DNS1             = "${var.VPN_DNS1}"
-    VPN_DNS2             = "${var.VPN_DNS2}"
-    LOCATION             = "${var.location}"
-    VPN_HOST             = "${var.vpnserver_hostname}"
-    VPN_PRIVATE_IP       = "${var.VPN_PRIVATE_IP}"
-    #VPN_DOMAIN           = "${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com"
-    VPN_DOMAIN      = "${var.DOMAIN["VPNSERVER"]}.${var.DOMAIN["LOCATION"]}.${var.DOMAIN["ZONE"]}"
-    VPN_COMPRESSION = "${var.VPN_COMPRESSION}"
+    VPN_PORT           = "${var.VPN_PORT}"
+    VPN_PROTOCOL       = "${var.VPN_PROTOCOL}"
+    VPN_CLIENT_SUBNET  = "${var.VPN_CLIENT_SUBNET}"
+    VPN_CLIENT_NETMASK = "${var.VPN_CLIENT_NETMASK}"
+    VPN_HUB_SUBNET     = "${var.VPN_HUB["SUBNET"]}"
+    VPN_HUB_NETMASK    = "${var.VPN_HUB["NETMASK"]}"
+    VPN_DNS1           = "${var.VPN_DNS1}"
+    VPN_DNS2           = "${var.VPN_DNS2}"
+    LOCATION           = "${var.location}"
+    VPN_HOST           = "${var.vpnserver_hostname}"
+    VPN_PRIVATE_IP     = "${var.VPN_PRIVATE_IP}"
+    VPN_DOMAIN         = "${var.DOMAIN["VPNSERVER"]}.${var.DOMAIN["LOCATION"]}.${var.DOMAIN["ZONE"]}"
+    VPN_COMPRESSION    = "${var.VPN_COMPRESSION}"
   }
 }
 
@@ -23,18 +24,19 @@ data "template_file" "vpn_client_template_file" {
   template = "${file("${var.client_template}")}"
 
   vars = {
-    VPN_PORT             = "${var.VPN_PORT}"
-    VPN_PROTOCOL         = "${var.VPN_PROTOCOL}"
-    VPN_FRONTEND_SUBNET  = "${var.VPN_FRONTEND_SUBNET}"
-    VPN_FRONTEND_NETMASK = "${var.VPN_FRONTEND_NETMASK}"
-    VPN_DNS1             = "${var.VPN_DNS1}"
-    VPN_DNS2             = "${var.VPN_DNS2}"
-    LOCATION             = "${var.location}"
-    VPN_HOST             = "${var.vpnserver_hostname}"
-    VPN_PRIVATE_IP       = "${var.VPN_PRIVATE_IP}"
-    #VPN_DOMAIN           = "${var.vpnserver_hostname}.${var.location}.cloudapp.azure.com"
-    VPN_DOMAIN      = "${var.DOMAIN["VPNSERVER"]}.${var.DOMAIN["LOCATION"]}.${var.DOMAIN["ZONE"]}"
-    VPN_COMPRESSION = "${var.VPN_COMPRESSION}"
+    VPN_PORT           = "${var.VPN_PORT}"
+    VPN_PROTOCOL       = "${var.VPN_PROTOCOL}"
+    VPN_CLIENT_SUBNET  = "${var.VPN_CLIENT_SUBNET}"
+    VPN_CLIENT_NETMASK = "${var.VPN_CLIENT_NETMASK}"
+    VPN_HUB_SUBNET     = "${var.VPN_HUB["SUBNET"]}"
+    VPN_HUB_NETMASK    = "${var.VPN_HUB["NETMASK"]}"
+    VPN_DNS1           = "${var.VPN_DNS1}"
+    VPN_DNS2           = "${var.VPN_DNS2}"
+    LOCATION           = "${var.location}"
+    VPN_HOST           = "${var.vpnserver_hostname}"
+    VPN_PRIVATE_IP     = "${var.VPN_PRIVATE_IP}"
+    VPN_DOMAIN         = "${var.DOMAIN["VPNSERVER"]}.${var.DOMAIN["LOCATION"]}.${var.DOMAIN["ZONE"]}"
+    VPN_COMPRESSION    = "${var.VPN_COMPRESSION}"
   }
 }
 
@@ -54,7 +56,7 @@ data "template_file" "lighttpd_template_file" {
 resource "random_id" "vpn_randomId" {
   keepers = {
     # Generate a new ID only when a new resource group is defined
-    resource_group = "${azurerm_resource_group.dx01.name}"
+    resource_group = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
   }
 
   byte_length = 8
@@ -63,8 +65,8 @@ resource "random_id" "vpn_randomId" {
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "dx_vpn_storage" {
   name                     = "diag${random_id.vpn_randomId.hex}"
-  resource_group_name      = "${azurerm_resource_group.dx01.name}"
-  location                 = "${azurerm_resource_group.dx01.location}"
+  resource_group_name      = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
+  location                 = "${azurerm_resource_group.vpn_hub_vnet-rg.location}"
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
@@ -76,8 +78,8 @@ resource "azurerm_storage_account" "dx_vpn_storage" {
 # Create openvpn virtual machine
 resource "azurerm_virtual_machine" "openvpn" {
   name                  = "${var.vpnserver_hostname}"
-  location              = "${azurerm_resource_group.dx01.location}"
-  resource_group_name   = "${azurerm_resource_group.dx01.name}"
+  location              = "${azurerm_resource_group.vpn_hub_vnet-rg.location}"
+  resource_group_name   = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
   network_interface_ids = ["${azurerm_network_interface.vpnserver_nic.id}"]
   vm_size               = "${var.vpnserver_vmsize}"
 
@@ -417,8 +419,8 @@ resource "azurerm_virtual_machine" "openvpn" {
 # VPNSERVER PublicIP
 resource "azurerm_public_ip" "PublicIP" {
   name                = "${var.vpnserver_hostname}-public"
-  resource_group_name = "${azurerm_resource_group.dx01.name}"
-  location            = "${azurerm_resource_group.dx01.location}"
+  resource_group_name = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
+  location            = "${azurerm_resource_group.vpn_hub_vnet-rg.location}"
   allocation_method   = "Static"
   domain_name_label   = "${var.vpnserver_hostname}" #//adds dns using hostname.centralus.cloudapp.azure.com
 
@@ -430,17 +432,18 @@ resource "azurerm_public_ip" "PublicIP" {
 # VPNSERVER Network Interface
 resource "azurerm_network_interface" "vpnserver_nic" {
   name                      = "${var.vpnserver_nic}"
-  location                  = "${azurerm_resource_group.dx01.location}"
-  resource_group_name       = "${azurerm_resource_group.dx01.name}"
+  location                  = "${azurerm_resource_group.vpn_hub_vnet-rg.location}"
+  resource_group_name       = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
   network_security_group_id = "${azurerm_network_security_group.vpn-sg.id}"
+  enable_ip_forwarding      = true
 
 
   ip_configuration {
     name                          = "${var.vpnserver_hostname}"
-    subnet_id                     = "${azurerm_subnet.frontend.id}"
-    private_ip_address_allocation = "Static"
-    private_ip_address            = "${var.VPN_PRIVATE_IP}"
-    public_ip_address_id          = "${azurerm_public_ip.PublicIP.id}"
+    subnet_id                     = "${azurerm_subnet.vpn_hub_vpn_subnet.id}"
+    private_ip_address_allocation = "Dynamic"
+    #private_ip_address           = "${var.VPN_PRIVATE_IP}"
+    public_ip_address_id = "${azurerm_public_ip.PublicIP.id}"
   }
 
   tags = {
