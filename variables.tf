@@ -4,9 +4,14 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 # PREFIX FOR RESOURCE NAMING SCHEME -----------------------------------------------------------------------------------
-variable "prefix" {
-  description = "The prefix that will be attached to all resources deployed"
-  default     = "dx"
+variable "prefix-vpn-hub" {
+  description = "The prefix that will be attached to all hub resources deployed"
+  default     = "vpn-hub"
+}
+
+variable "prefix-spoke" {
+  description = "The prefix that will be attached to all spoke resources deployed"
+  default     = "spoke"
 }
 
 # CREDENTIALS ---------------------------------------------------------------------------------------------------------
@@ -67,7 +72,7 @@ variable "windows_password" {
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-# HOSTNAMES -----------------------------------------------------------------------------------------------------------
+# Static HOSTNAMES -----------------------------------------------------------------------------------------------------------
 variable "vpnserver_hostname" {
   description = "The hostname of the openvpn server LINUX VM to be configured"
   default     = "bluedx-vpn01"
@@ -121,61 +126,71 @@ variable "ssh_private_key_file" {
   default     = "./ssh_keys/ovpn"
 }
 
-variable "client_config_path" {
-  description = "client ovpn config path"
-  default     = "./client_configs"
+variable "VPN_HUB" {
+  description = "SUBNET/NETMASK/CIDR for vpn_hub_gateway_subnet Advertise VPN Clients - Push Routing"
+  type        = "map"
+  default = {
+    "SUBNET"  = "10.1.0.0"
+    "CIDR"    = "24"
+    "NETMASK" = "255.255.255.0"
+  }
 }
 
-variable "client_config_name" {
-  description = "client ovpn file name"
-  default     = "bluedx-vpn01-ovpn-client"
-}
+# ---------------------------------------------------------------------------------------------------------------------
 
-variable "cert_details" {
-  description = "certification details path"
-  default     = "../cert_details"
-}
+### VPN SERVER and Client Configuration file Template Variables #### --------------------------------------------------
 
+## Port to be used by the VPN SERVEF
 variable "VPN_PORT" {
   description = "VPN Server Port"
   default     = "1194"
 }
 
+## PROTOCOL FOR VPN SERVER UDP/TCP
 variable "VPN_PROTOCOL" {
   description = "Protocol for VPN Server server.conf"
   default     = "udp"
 }
 
-variable "VPN_FRONTEND_SUBNET" {
+## Virtual network created by the OpenVPN server. (REQUIRED)
+#Client would get a virtual private ip from this range(DHCP setting).
+variable "VPN_CLIENT_SUBNET" {
   description = "setting for server.conf"
-  default     = "10.3.0.0"
+  default     = "10.8.0.0"
 }
 
-variable "VPN_FRONTEND_NETMASK" {
+## Netmask for VPN_CLIENT_SUBNET. (REQUIRED)
+#Client would get a virtual private ip from this range(DHCP setting).
+variable "VPN_CLIENT_NETMASK" {
   description = "setting for server.conf"
   default     = "255.255.255.0"
 }
 
+# VPN SERVER Compression Algorithm
 variable "VPN_COMPRESSION" {
   description = "VPN compression setting - lzo, lz4 or blank"
   default     = "compress lz4"
 }
 
+# VPN SERVER DNS1 OPTION - dhcp-option
 variable "VPN_DNS1" {
   description = "First Primary DNS"
   default     = "9.9.9.9"
 }
 
+# VPN SERVER DNS1 OPTION - dhcp-option
 variable "VPN_DNS2" {
   description = "Secondary DNS"
   default     = "149.112.112.112"
 }
 
+# VPN SERVER DNS1 OPTION - dhcp-option
 variable "VPN_PRIVATE_IP" {
   description = "VPN SERVER Static Private IP Address"
-  default     = "10.3.0.2"
+  default     = "10.1.0.18"
 }
 
+# DOMAIN - dhcp-option
 variable "DOMAIN" {
   description = "VPN Server Domain"
   type        = "map"
@@ -203,14 +218,14 @@ variable "virtual_network" {
   default     = "dxVPNVNet"
 }
 
-variable "gateway_subnet" {
+variable "vpn_gateway_subnet" {
   description = "The Gateway subnet"
   default     = "GatewaySubnet"
 }
 
-variable "vpn_frontend_subnet" {
-  description = "The frontend vpn client network"
-  default     = "frontendSubNet"
+variable "vpn_client_subnet" {
+  description = "The vpn client network"
+  default     = "client_VPNSubnet"
 }
 
 variable "mgmt_backend_subnet" {
@@ -221,14 +236,14 @@ variable "mgmt_backend_subnet" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 # SECURITY GROUPS VARIABLES -------------------------------------------------------------------------------------------
-variable "dx_vpn-sg" {
+variable "vpn_hub-sg" {
   description = "Security group for OpenVPN Server"
-  default     = "dx_vpn-SecurityGroup"
+  default     = "dx_vpnserver-SecurityGroup"
 }
 
-variable "dx_windows10-sg" {
+variable "client-sg" {
   description = "Security group for Windows 10 Desktop"
-  default     = "dx_Windows10-SecurityGroup"
+  default     = "dx_client-SecurityGroup"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
