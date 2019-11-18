@@ -131,6 +131,7 @@ variable "ssh_private_key_file" {
   default     = "./ssh_keys/ovpn"
 }
 
+# Primarily for the server template
 variable "VPN_HUB" {
   description = "SUBNET/NETMASK/CIDR for vpn_hub_gateway_subnet Advertise VPN Clients - Push Routing"
   type        = "map"
