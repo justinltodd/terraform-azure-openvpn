@@ -1,7 +1,7 @@
 # VPN Hub Network Configuration
 
 
-# VPN Hub Virtual Network Subnet 10.0.0.0 - 10.0.0.15
+# VPN Hub Virtual Network
 resource "azurerm_virtual_network" "vpn_hub_vnet" {
   name                = "${var.prefix-vpn-hub}-vnet"
   location            = "${azurerm_resource_group.vpn_hub_vnet-rg.location}"
@@ -14,7 +14,7 @@ resource "azurerm_virtual_network" "vpn_hub_vnet" {
   }
 }
 
-# VPN Hub Gateway subnet
+# VPN Hub Gateway subnet  Subnet 10.0.0.0 - 10.0.0.15
 resource "azurerm_subnet" "vpn_hub_gateway_subnet" {
   name                 = "${var.prefix-vpn-hub}-gateway-subnet"
   resource_group_name  = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
