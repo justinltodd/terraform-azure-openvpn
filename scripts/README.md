@@ -1,5 +1,5 @@
 	````
-## Adjust Templates and variables
+## Adjust Templates variables and variables in variables.tf
 
     There are number of varibale options the terraform will accept - located in variables.tf
     Any script file that has ending of .template will have template variables that will be placing in the template files during rendering.
