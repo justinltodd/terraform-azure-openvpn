@@ -2,7 +2,7 @@
 resource "random_id" "dx_randomId" {
   keepers = {
     # Generate a new ID only when a new resource group is defined
-    resource_group = "${azurerm_resource_group.dx01.name}"
+    resource_group = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
   }
 
   byte_length = 8
@@ -11,8 +11,8 @@ resource "random_id" "dx_randomId" {
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "dx_windows10_storage" {
   name                     = "diag${random_id.dx_randomId.hex}"
-  resource_group_name      = "${azurerm_resource_group.dx01.name}"
-  location                 = "${azurerm_resource_group.dx01.location}"
+  resource_group_name      = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
+  location                 = "${azurerm_resource_group.vpn_hub_vnet-rg.location}"
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
@@ -24,8 +24,8 @@ resource "azurerm_storage_account" "dx_windows10_storage" {
 # Create virtual machine
 resource "azurerm_virtual_machine" "dx_windows" {
   name                  = "${var.windows_hostname}"
-  location              = "${azurerm_resource_group.dx01.location}"
-  resource_group_name   = "${azurerm_resource_group.dx01.name}"
+  location              = "${azurerm_resource_group.vpn_hub_vnet-rg.location}"
+  resource_group_name   = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
   network_interface_ids = ["${azurerm_network_interface.dx-WindowsNic.id}"]
   vm_size               = "${var.dx_windows10_vmsize}"
 
@@ -79,8 +79,8 @@ resource "azurerm_virtual_machine" "dx_windows" {
 # Create windows 10 desktop IPs
 resource "azurerm_public_ip" "dx_PublicIP" {
   name                = "${var.windows_hostname}-PublicIP"
-  resource_group_name = "${azurerm_resource_group.dx01.name}"
-  location            = "${azurerm_resource_group.dx01.location}"
+  resource_group_name = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
+  location            = "${azurerm_resource_group.vpn_hub_vnet-rg.location}"
   allocation_method   = "Dynamic"
 
   tags = {
@@ -91,13 +91,13 @@ resource "azurerm_public_ip" "dx_PublicIP" {
 # Create windows 10 desktop network interface
 resource "azurerm_network_interface" "dx-WindowsNic" {
   name                      = "${var.windows_hostname}Nic01"
-  location                  = "${azurerm_resource_group.dx01.location}"
-  resource_group_name       = "${azurerm_resource_group.dx01.name}"
-  network_security_group_id = "${azurerm_network_security_group.windows10-sg.id}"
+  location                  = "${azurerm_resource_group.vpn_hub_vnet-rg.location}"
+  resource_group_name       = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
+  network_security_group_id = "${azurerm_network_security_group.client-sg.id}"
 
   ip_configuration {
     name                          = "${var.windows_hostname}"
-    subnet_id                     = "${azurerm_subnet.frontend.id}"
+    subnet_id                     = "${azurerm_subnet.vpn_hub_client_subnet.id}"
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = "${azurerm_public_ip.dx_PublicIP.id}"
   }
