@@ -17,22 +17,22 @@ variable "prefix-spoke" {
 # CREDENTIALS ---------------------------------------------------------------------------------------------------------
 variable "subscription_id" {
   description = "Subscription ID"
-  default     = "36483a93-0c29-4b4f-89fd-2b1077a44280"
+  default     = ""
 }
 
 variable "tenant_id" {
   description = "Tenant ID"
-  default     = "8ce308d8-142f-4ba1-8e44-7ac446b0b300"
+  default     = ""
 }
 
 variable "client_id" {
   description = "Client ID"
-  default     = "29e008e2-2708-4484-9e78-9a652389124b"
+  default     = ""
 }
 
 variable "client_secret" {
   description = "Client secret password"
-  default     = "Mi2@/mM=4Js3l4xRv:KrCEjHlvGU]N@3"
+  default     = ""
 }
 # ---------------------------------------------------------------------------------------------------------------------
 
