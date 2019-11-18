@@ -91,7 +91,7 @@ push "dhcp-option DOMAIN ${VPN_DOMAIN}"
 #route-nopull
 
 #Advertise the ${VPN_HUB_SUBNET}/24 subnet to VPN clients as being accessible through the VPN.
-push "route ${VPN_HUB_SUBNET} ${VPN_HUB_NETMASK}
+push "route ${VPN_HUB_SUBNET} ${VPN_HUB_NETMASK}"
 
 # Set appropriate timeouts (check the man page)
 keepalive 10 120
