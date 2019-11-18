@@ -59,8 +59,9 @@ data "template_file" "networking_template_file" {
   template = "${file("${var.networking_template}")}"
 
   vars = {
-    VPN_HUB_SUBNET  = "${var.VPN_CLIENT["SUBNET"]}"
-    VPN_HUB_NETMASK = "${var.VPN_CIDR["NETMASK"]}"
+    VPN_CLIENT_CIDR    = "${var.VPN_CLIENT["CIDR"]}"
+    VPN_CLIENT_SUBNET  = "${var.VPN_CLIENT["SUBNET"]}"
+    VPN_CLIENT_NETMASK = "${var.VPN_CLIENT["NETMASK"]}"
   }
 }
 
@@ -247,7 +248,7 @@ resource "azurerm_virtual_machine" "openvpn" {
 
   # Script for network adjustments such as IP forwarding.
   provisioner "file" {
-    source      = "./scripts/networking.sh"
+    content     = "${data.template_file.networking_template_file.rendered}"
     destination = "/tmp/networking.sh"
 
     connection {
@@ -259,13 +260,13 @@ resource "azurerm_virtual_machine" "openvpn" {
     }
   }
 
-  ## Enable net.ipv4.ip_forward for the system and ## Get IP address and add it to server.conf
+  ## Enable net.ipv4.ip_forward for the system and ## Firewall UFW Settings 
   provisioner "remote-exec" {
     inline = [
-      "sleep 30",
+      "sleep 15",
       "sudo chmod 775 /tmp/networking.sh",
       "sudo /tmp/networking.sh",
-      "sudo rm -rf /tmp/networking.sh",
+      #"sudo rm -rf /tmp/networking.sh",
     ]
 
     connection {
