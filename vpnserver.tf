@@ -453,7 +453,7 @@ resource "azurerm_network_interface" "vpnserver_nic" {
 
   ip_configuration {
     name                          = "${var.vpnserver_hostname}"
-    subnet_id                     = "${azurerm_subnet.vpn_hub_vpn_subnet.id}"
+    subnet_id                     = "${azurerm_subnet.vpn_hub_subnet.id}"
     private_ip_address_allocation = "Dynamic"
     #private_ip_address           = "${var.VPN_PRIVATE_IP}"
     public_ip_address_id = "${azurerm_public_ip.PublicIP.id}"
