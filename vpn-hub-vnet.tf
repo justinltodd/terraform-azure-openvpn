@@ -14,7 +14,7 @@ resource "azurerm_virtual_network" "vpn_hub_vnet" {
   }
 }
 
-# VPN Hub Gateway subnet  Subnet 10.0.0.0 - 10.0.0.15
+# VPN Hub Gateway subnet 10.1.0.0 - 10.1.0.15
 resource "azurerm_subnet" "vpn_hub_gateway_subnet" {
   name                 = "${var.prefix-vpn-hub}-gateway-subnet"
   resource_group_name  = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
@@ -22,15 +22,15 @@ resource "azurerm_subnet" "vpn_hub_gateway_subnet" {
   address_prefix       = "${var.VPN_HUB["SUBNET"]}/28"
 }
 
-# Subnet for vpnserver instance 10.0.0.15 - 10.0.0.31
-resource "azurerm_subnet" "vpn_hub_vpn_subnet" {
+# Subnet for vpnserver instance 10.1.0.15 - 10.1.0.31
+resource "azurerm_subnet" "vpn_hub_subnet" {
   name                 = "${var.prefix-vpn-hub}-vpn-subnet"
   resource_group_name  = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
   virtual_network_name = "${azurerm_virtual_network.vpn_hub_vnet.name}"
   address_prefix       = "10.1.0.16/28"
 }
 
-# Subnet for Management instances 10.0.0.32 - 10.0.0.47
+# Subnet for Management instances 10.1.0.32 - 10.1.0.47
 resource "azurerm_subnet" "vpn_hub_mgmt_subnet" {
   name                 = "${var.prefix-vpn-hub}-mgmt-subnet"
   resource_group_name  = "${azurerm_resource_group.vpn_hub_vnet-rg.name}"
